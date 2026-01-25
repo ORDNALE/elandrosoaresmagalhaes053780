@@ -8,6 +8,9 @@ import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 @Path("/api/v1/auth")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -20,6 +23,21 @@ public class AuthController {
     @POST
     @Path("/login")
     @PermitAll
+    @Operation(summary = "Autenticação do usuário")
+    @APIResponses({
+            @APIResponse(
+                    responseCode = "200",
+                    description = "Autenticação realizada com sucesso"
+            ),
+            @APIResponse(
+                    responseCode = "401",
+                    description = "Usuário ou senha inválidos"
+            ),
+            @APIResponse(
+                    responseCode = "400",
+                    description = "Requisição inválida"
+            )
+    })
     public TokenResponse login(LoginRequest request) {
         return authService.login(request);
     }
@@ -27,7 +45,19 @@ public class AuthController {
     @POST
     @Path("/refresh")
     @PermitAll
+    @Operation(summary = "Renovação do access token via refresh token")
+    @APIResponses({
+            @APIResponse(
+                    responseCode = "200",
+                    description = "Token renovado com sucesso"
+            ),
+            @APIResponse(
+                    responseCode = "401",
+                    description = "Refresh token inválido ou expirado"
+            )
+    })
     public TokenResponse refresh(TokenRefreshRequest request) throws ParseException {
         return authService.refresh(request);
     }
 }
+
