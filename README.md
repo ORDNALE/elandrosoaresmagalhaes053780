@@ -48,3 +48,47 @@ docker compose up --build
         Usuário: minioadmin
         
         Senha: minioadmin
+
+🔐 Autenticação (JWT)
+
+    A API utiliza autenticação JWT stateless.
+    
+    Access Token
+    
+    Expiração: 5 minutos
+    
+    Utilizado para acessar endpoints protegidos
+    
+    Refresh Token
+    
+    Expiração: 30 minutos
+    
+    Utilizado para renovar o access token sem novo login
+    
+        Login
+        POST /api/v1/auth/login
+
+
+    Gera um access token e um refresh token.
+    
+        Refresh de token
+        POST /api/v1/auth/refresh
+    
+    
+    Gera um novo access token a partir de um refresh token válido.
+    
+    Uso do token
+    
+    Enviar o access token no header:
+    
+        Authorization: Bearer <access-token>
+    
+    Segurança (CORS)
+    
+    A API aceita requisições apenas da origem configurada:
+    
+        quarkus.http.cors=true
+        quarkus.http.cors.origins=http://localhost:8080
+    
+    
+    Implementação simplificada, adequada para avaliação técnica.
