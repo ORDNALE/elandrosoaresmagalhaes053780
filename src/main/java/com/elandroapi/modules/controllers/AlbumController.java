@@ -2,6 +2,8 @@ package com.elandroapi.modules.controllers;
 
 import com.elandroapi.modules.enums.TipoArtista;
 import com.elandroapi.modules.services.AlbumService;
+import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -18,6 +20,7 @@ public class AlbumController {
     AlbumService service;
 
     @GET
+    @RolesAllowed({"USER", "ADMIN"})
     @Operation(summary = "Listar álbuns", description = "Retorna uma lista paginada de álbuns.")
     public Response listar(@QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("size") @DefaultValue("10") int size,

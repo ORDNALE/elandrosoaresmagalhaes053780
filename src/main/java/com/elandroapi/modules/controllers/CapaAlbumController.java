@@ -3,6 +3,7 @@ package com.elandroapi.modules.controllers;
 
 import com.elandroapi.modules.dto.response.CapaAlbumResponse;
 import com.elandroapi.modules.services.CapaAlbumService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Path("/v1/albuns")
 @Tag(name = "Album", description = "Gerenciamento de álbuns")
+@RolesAllowed({"USER", "ADMIN"})
 public class CapaAlbumController {
 
     @Inject
