@@ -21,8 +21,9 @@ public class AuthService {
 
     public TokenResponse login(LoginRequest request) {
 
-        if (!"admin".equals(request.username())) {
-            throw new WebApplicationException("Usuário inválido", 401);
+        if (!"admin".equals(request.username())
+                || !"admin".equals(request.password())) {
+            throw new WebApplicationException("Credenciais inválidas", 401);
         }
 
         String accessToken = jwtService.gerarToken(request.username());
@@ -35,6 +36,10 @@ public class AuthService {
 
         JsonWebToken jwt = jwtParser.parse(request.refreshToken());
 
+        if (!"elandro-api".equals(jwt.getIssuer())) {
+            throw new WebApplicationException("Issuer inválido", 401);
+        }
+
         if (!"refresh".equals(jwt.getClaim("type"))) {
             throw new WebApplicationException("Refresh token inválido", 401);
         }
@@ -46,4 +51,5 @@ public class AuthService {
                 request.refreshToken()
         );
     }
+
 }
