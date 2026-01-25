@@ -89,6 +89,3 @@ docker compose up --build
     
         quarkus.http.cors=true
         quarkus.http.cors.origins=http://localhost:8080
-    
-    
-    Implementação simplificada, adequada para avaliação técnica.
