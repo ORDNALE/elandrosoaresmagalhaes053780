@@ -1,7 +1,7 @@
-package com.app.modules.dto.response;
+package com.elandroapi.modules.dto.response;
 
 
-import com.app.modules.enums.TipoArtista;
+import com.elandroapi.modules.enums.TipoArtista;
 import lombok.Getter;
 import lombok.Setter;
 

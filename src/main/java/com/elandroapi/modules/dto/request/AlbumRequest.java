@@ -1,4 +1,4 @@
-package com.app.modules.dto.request;
+package com.elandroapi.modules.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

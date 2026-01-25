@@ -1,8 +1,8 @@
-package com.app.modules.mappers;
+package com.elandroapi.modules.mappers;
 
 
-import com.app.modules.dto.response.CapaAlbumResponse;
-import com.app.modules.entities.CapaAlbum;
+import com.elandroapi.modules.dto.response.CapaAlbumResponse;
+import com.elandroapi.modules.entities.CapaAlbum;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.http.Method;

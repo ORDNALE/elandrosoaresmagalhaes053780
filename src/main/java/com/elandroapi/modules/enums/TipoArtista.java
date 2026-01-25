@@ -1,4 +1,4 @@
-package com.app.modules.enums;
+package com.elandroapi.modules.enums;
 
 public enum TipoArtista {
     SOLO,

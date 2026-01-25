@@ -1,6 +1,6 @@
-package com.app.modules.entities;
+package com.elandroapi.modules.entities;
 
-import com.app.modules.enums.TipoArtista;
+import com.elandroapi.modules.enums.TipoArtista;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

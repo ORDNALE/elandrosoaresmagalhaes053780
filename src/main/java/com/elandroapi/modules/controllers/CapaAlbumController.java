@@ -1,8 +1,8 @@
-package com.app.modules.controllers;
+package com.elandroapi.modules.controllers;
 
 
-import com.app.modules.dto.response.CapaAlbumResponse;
-import com.app.modules.services.CapaAlbumService;
+import com.elandroapi.modules.dto.response.CapaAlbumResponse;
+import com.elandroapi.modules.services.CapaAlbumService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -12,7 +12,6 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import jakarta.annotation.security.RolesAllowed;
 
 import java.util.List;
 

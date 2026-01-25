@@ -1,10 +1,10 @@
-package com.app.modules.mappers;
+package com.elandroapi.modules.mappers;
 
-import com.app.modules.dto.request.ArtistaRequest;
-import com.app.modules.dto.response.ArtistaResponse;
-import com.app.modules.entities.Album;
-import com.app.modules.entities.Artista;
-import com.app.modules.repositories.AlbumRepository;
+import com.elandroapi.modules.dto.request.ArtistaRequest;
+import com.elandroapi.modules.dto.response.ArtistaResponse;
+import com.elandroapi.modules.entities.Album;
+import com.elandroapi.modules.entities.Artista;
+import com.elandroapi.modules.repositories.AlbumRepository;
 import jakarta.inject.Inject;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -1,11 +1,11 @@
-package com.app.modules.services;
+package com.elandroapi.modules.services;
 
-import com.app.modules.dto.response.CapaAlbumResponse;
-import com.app.modules.entities.Album;
-import com.app.modules.entities.CapaAlbum;
-import com.app.modules.mappers.CapaAlbumMapper;
-import com.app.modules.repositories.AlbumRepository;
-import com.app.modules.repositories.CapaAlbumRepository;
+import com.elandroapi.modules.dto.response.CapaAlbumResponse;
+import com.elandroapi.modules.entities.Album;
+import com.elandroapi.modules.entities.CapaAlbum;
+import com.elandroapi.modules.mappers.CapaAlbumMapper;
+import com.elandroapi.modules.repositories.AlbumRepository;
+import com.elandroapi.modules.repositories.CapaAlbumRepository;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import jakarta.enterprise.context.ApplicationScoped;

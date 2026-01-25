@@ -1,16 +1,12 @@
-package com.app.modules.controllers;
+package com.elandroapi.modules.controllers;
 
-import com.app.modules.dto.request.AlbumRequest;
-import com.app.modules.enums.TipoArtista;
-import com.app.modules.services.AlbumService;
+import com.elandroapi.modules.enums.TipoArtista;
+import com.elandroapi.modules.services.AlbumService;
 import jakarta.inject.Inject;
-import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import jakarta.ws.rs.core.Response;
-
-import jakarta.annotation.security.RolesAllowed;
 
 import java.util.List;
 

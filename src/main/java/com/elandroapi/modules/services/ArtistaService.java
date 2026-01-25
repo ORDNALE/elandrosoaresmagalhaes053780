@@ -1,10 +1,10 @@
-package com.app.modules.services;
+package com.elandroapi.modules.services;
 
-import com.app.modules.dto.request.ArtistaRequest;
-import com.app.modules.dto.response.ArtistaResponse;
-import com.app.modules.entities.Artista;
-import com.app.modules.mappers.ArtistaMapper;
-import com.app.modules.repositories.ArtistaRepository;
+import com.elandroapi.modules.dto.request.ArtistaRequest;
+import com.elandroapi.modules.dto.response.ArtistaResponse;
+import com.elandroapi.modules.entities.Artista;
+import com.elandroapi.modules.mappers.ArtistaMapper;
+import com.elandroapi.modules.repositories.ArtistaRepository;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;

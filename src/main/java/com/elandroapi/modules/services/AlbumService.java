@@ -1,11 +1,11 @@
-package com.app.modules.services;
+package com.elandroapi.modules.services;
 
 
-import com.app.modules.dto.response.AlbumResponse;
-import com.app.modules.dto.response.Paginacao;
-import com.app.modules.enums.TipoArtista;
-import com.app.modules.mappers.AlbumMapper;
-import com.app.modules.repositories.AlbumRepository;
+import com.elandroapi.modules.dto.response.AlbumResponse;
+import com.elandroapi.modules.dto.response.Paginacao;
+import com.elandroapi.modules.enums.TipoArtista;
+import com.elandroapi.modules.mappers.AlbumMapper;
+import com.elandroapi.modules.repositories.AlbumRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 

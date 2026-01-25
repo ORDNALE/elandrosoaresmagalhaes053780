@@ -1,14 +1,13 @@
-package com.app.modules.controllers;
+package com.elandroapi.modules.controllers;
 
-import com.app.modules.dto.request.ArtistaRequest;
-import com.app.modules.services.ArtistaService;
+import com.elandroapi.modules.dto.request.ArtistaRequest;
+import com.elandroapi.modules.services.ArtistaService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.DefaultValue;
 
 @Path("/v1/artistas")

@@ -1,7 +1,7 @@
-package com.app.modules.repositories;
+package com.elandroapi.modules.repositories;
 
-import com.app.modules.entities.Album;
-import com.app.modules.enums.TipoArtista;
+import com.elandroapi.modules.entities.Album;
+import com.elandroapi.modules.enums.TipoArtista;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;

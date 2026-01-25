@@ -1,4 +1,4 @@
-package com.app.modules.entities;
+package com.elandroapi.modules.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

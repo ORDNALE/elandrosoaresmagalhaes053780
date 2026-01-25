@@ -1,6 +1,6 @@
-package com.app.modules.dto.request;
+package com.elandroapi.modules.dto.request;
 
-import com.app.modules.enums.TipoArtista;
+import com.elandroapi.modules.enums.TipoArtista;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

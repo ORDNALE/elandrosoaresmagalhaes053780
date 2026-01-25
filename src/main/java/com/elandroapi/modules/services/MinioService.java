@@ -1,4 +1,4 @@
-package com.app.modules.services;
+package com.elandroapi.modules.services;
 
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
