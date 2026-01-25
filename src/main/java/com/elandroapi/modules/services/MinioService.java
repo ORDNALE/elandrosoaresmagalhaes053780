@@ -18,8 +18,8 @@ public class MinioService {
     @Inject
     MinioClient minio;
 
-    @ConfigProperty(name = "quarkus.minio.bucket")
-    String bucket;
+    @ConfigProperty(name = "minio.bucket-name")
+    String bucketName;
 
     private static final Duration URL_EXPIRATION = Duration.ofMinutes(30);
 
@@ -27,7 +27,7 @@ public class MinioService {
     public void enviar(String filename, InputStream input) throws Exception {
         minio.putObject(
                 PutObjectArgs.builder()
-                        .bucket(bucket)
+                        .bucket(bucketName)
                         .object(filename)
                         .stream(input, -1, 10485760)
                         .build()
@@ -38,7 +38,7 @@ public class MinioService {
         return minio.getPresignedObjectUrl(
                 GetPresignedObjectUrlArgs.builder()
                         .method(Method.GET)
-                        .bucket(bucket)
+                        .bucket(bucketName)
                         .object(filename)
                         .expiry((int)URL_EXPIRATION.getSeconds())
                         .build()
