@@ -22,7 +22,6 @@ public class AlbumController {
     AlbumService service;
 
     @GET
-    @RolesAllowed({ "User", "Admin" })
     @Operation(summary = "Listar álbuns", description = "Retorna uma lista paginada de álbuns.")
     public Response listar(@QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("size") @DefaultValue("10") int size,

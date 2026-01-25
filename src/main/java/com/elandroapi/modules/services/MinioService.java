@@ -21,7 +21,7 @@ public class MinioService {
     @ConfigProperty(name = "quarkus.minio.bucket")
     String bucket;
 
-    private static final Duration URL_EXPIRATION_PADRAO = Duration.ofMinutes(5);
+    private static final Duration URL_EXPIRATION = Duration.ofMinutes(30);
 
 
     public void enviar(String filename, InputStream input) throws Exception {
@@ -40,7 +40,7 @@ public class MinioService {
                         .method(Method.GET)
                         .bucket(bucket)
                         .object(filename)
-                        .expiry((int)URL_EXPIRATION_PADRAO.getSeconds())
+                        .expiry((int)URL_EXPIRATION.getSeconds())
                         .build()
         );
     }

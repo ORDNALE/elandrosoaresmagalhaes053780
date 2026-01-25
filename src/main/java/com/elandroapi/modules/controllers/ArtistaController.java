@@ -19,7 +19,6 @@ public class ArtistaController {
     ArtistaService service;
 
     @GET
-    @RolesAllowed({ "User", "Admin" })
     @Operation(summary = "Listar artistas", description = "Retorna uma lista de artistas com opção de filtro por nome e ordenação.")
     public Response listar(@QueryParam("nome") String nome, @QueryParam("sort") @DefaultValue("asc") String sort) {
         return Response.ok(service.listar(nome, sort)).build();
@@ -27,14 +26,12 @@ public class ArtistaController {
 
     @GET
     @Path("/{id}")
-    @RolesAllowed({ "User", "Admin" })
     @Operation(summary = "Buscar artista por ID", description = "Retorna os detalhes de um artista específico.")
     public Response buscar(@PathParam("id") Long id) {
         return Response.ok(service.buscar(id)).build();
     }
 
     @POST
-    @RolesAllowed("Admin")
     @Operation(summary = "Criar novo artista", description = "Cria um novo artista com os dados fornecidos.")
     public Response salvar(@Valid ArtistaRequest request) {
         return Response.ok(service.salvar(request)).status(Response.Status.CREATED).build();
@@ -42,7 +39,6 @@ public class ArtistaController {
 
     @Path("/{id}")
     @PUT
-    @RolesAllowed("Admin")
     @Operation(summary = "Atualizar artista", description = "Atualiza os dados de um artista existente.")
     public Response atualizar(@PathParam("id") Long id, ArtistaRequest request) {
         service.atualizar(id, request);
@@ -51,7 +47,6 @@ public class ArtistaController {
 
     @Path("/{id}")
     @DELETE
-    @RolesAllowed("Admin")
     @Operation(summary = "Excluir artista", description = "Remove um artista do sistema.")
     public Response excluir(@PathParam("id") Long id) {
         service.excluir(id);

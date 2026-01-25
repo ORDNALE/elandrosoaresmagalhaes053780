@@ -27,7 +27,6 @@ public class CapaAlbumController {
     @Path("/{id}/capas")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed("Admin")
     @Operation(summary = "Upload de capa de álbum", description = "Realiza o upload de uma ou mais imagens para a capa de um álbum.")
     public Response upload(@PathParam("id") Long id, @RestForm("images") List<FileUpload> files) {
         if (files == null || files.isEmpty()) {
