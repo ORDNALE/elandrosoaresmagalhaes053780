@@ -8,6 +8,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Path("/v1/albuns")
 @Tag(name = "Album", description = "Gerenciamento de álbuns")
+@SecurityRequirement(name = "jwt")
 @RolesAllowed({"USER", "ADMIN"})
 public class CapaAlbumController {
 

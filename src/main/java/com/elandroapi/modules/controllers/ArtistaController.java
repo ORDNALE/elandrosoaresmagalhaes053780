@@ -8,11 +8,13 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import jakarta.ws.rs.DefaultValue;
 
 @Path("/v1/artistas")
 @Tag(name = "Artista", description = "Gerenciamento de artistas")
+@SecurityRequirement(name = "jwt")
 public class ArtistaController {
 
     @Inject

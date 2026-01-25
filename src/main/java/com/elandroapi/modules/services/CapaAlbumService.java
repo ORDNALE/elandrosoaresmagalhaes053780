@@ -38,7 +38,7 @@ public class CapaAlbumService {
     @Inject
     CapaAlbumMapper mapper;
 
-    @ConfigProperty(name = "quarkus.minio.bucket-name")
+    @ConfigProperty(name = "minio.bucket-name")
     String bucketName;
 
     @Transactional

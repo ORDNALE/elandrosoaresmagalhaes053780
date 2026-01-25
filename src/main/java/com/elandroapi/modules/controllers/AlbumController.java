@@ -7,6 +7,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import jakarta.ws.rs.core.Response;
 
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Path("/v1/albuns")
 @Tag(name = "Album", description = "Gerenciamento de álbuns")
+@SecurityRequirement(name = "jwt")
 public class AlbumController {
 
     @Inject
