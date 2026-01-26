@@ -1,5 +1,6 @@
 package com.elandroapi.modules.controllers;
 
+import com.elandroapi.modules.dto.filter.ArtistaFilter;
 import com.elandroapi.modules.dto.request.ArtistaRequest;
 import com.elandroapi.modules.services.ArtistaService;
 import jakarta.annotation.security.RolesAllowed;
@@ -10,7 +11,6 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import jakarta.ws.rs.DefaultValue;
 
 @Path("/v1/artistas")
 @Tag(name = "Artista", description = "Gerenciamento de artistas")
@@ -23,8 +23,8 @@ public class ArtistaController {
     @GET
     @RolesAllowed({"USER", "ADMIN"})
     @Operation(summary = "Listar artistas", description = "Retorna uma lista de artistas com opção de filtro por nome e ordenação.")
-    public Response listar(@QueryParam("nome") String nome, @QueryParam("sort") @DefaultValue("asc") String sort) {
-        return Response.ok(service.listar(nome, sort)).build();
+    public Response listar(@BeanParam ArtistaFilter filter) {
+        return Response.ok(service.listar(filter)).build();
     }
 
     @GET
