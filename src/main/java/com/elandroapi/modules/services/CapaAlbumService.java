@@ -6,11 +6,10 @@ import com.elandroapi.modules.entities.CapaAlbum;
 import com.elandroapi.modules.mappers.CapaAlbumMapper;
 import com.elandroapi.modules.repositories.AlbumRepository;
 import com.elandroapi.modules.repositories.CapaAlbumRepository;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
@@ -27,9 +26,6 @@ import java.util.stream.Collectors;
 public class CapaAlbumService {
 
     @Inject
-    MinioClient minioClient;
-
-    @Inject
     CapaAlbumRepository repository;
 
     @Inject
@@ -38,13 +34,16 @@ public class CapaAlbumService {
     @Inject
     CapaAlbumMapper mapper;
 
+    @Inject
+    MinioService minioService;
+
     @ConfigProperty(name = "minio.bucket-name")
     String bucketName;
 
     @Transactional
     public List<CapaAlbumResponse> uploadCapas(Long albumId, List<FileUpload> files) {
         Album album = albumRepository.findByIdOptional(albumId)
-                .orElseThrow(() -> new jakarta.ws.rs.NotFoundException("Álbum não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Álbum não encontrado"));
 
         List<CapaAlbum> capas = new ArrayList<>();
 
@@ -53,13 +52,7 @@ public class CapaAlbumService {
             String hash = generateHash(extension);
 
             try (InputStream is = Files.newInputStream(file.filePath())) {
-                minioClient.putObject(
-                        PutObjectArgs.builder()
-                                .bucket(bucketName)
-                                .object(hash)
-                                .stream(is, file.size(), -1)
-                                .contentType(file.contentType())
-                                .build());
+                minioService.enviar(bucketName, hash, is, file.size(), file.contentType());
 
                 CapaAlbum capa = new CapaAlbum();
                 capa.setAlbum(album);
@@ -76,6 +69,21 @@ public class CapaAlbumService {
         }
 
         return capas.stream().map(mapper::toResponse).collect(Collectors.toList());
+    }
+
+    public String gerarUrlDownload(Long capaId) throws Exception {
+        CapaAlbum capa = repository.findByIdOptional(capaId)
+                .orElseThrow(() -> new NotFoundException("Capa de álbum não encontrada"));
+        return minioService.gerarUrl(capa);
+    }
+
+    @Transactional
+    public void excluirCapa(Long capaId) throws Exception {
+        CapaAlbum capa = repository.findByIdOptional(capaId)
+                .orElseThrow(() -> new NotFoundException("Capa de álbum não encontrada"));
+
+        minioService.remove(capa);
+        repository.delete(capa);
     }
 
     private String generateHash(String extension) {
