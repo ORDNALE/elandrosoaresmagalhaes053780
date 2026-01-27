@@ -1,6 +1,6 @@
 package com.elandroapi.modules.controllers;
 
-import com.elandroapi.modules.dto.filter.ArtistaFilter;
+import com.elandroapi.core.pagination.PageRequest;
 import com.elandroapi.modules.dto.request.ArtistaRequest;
 import com.elandroapi.modules.services.ArtistaService;
 import jakarta.annotation.security.RolesAllowed;
@@ -22,9 +22,11 @@ public class ArtistaController {
 
     @GET
     @RolesAllowed({"USER", "ADMIN"})
-    @Operation(summary = "Listar artistas", description = "Retorna uma lista de artistas com opção de filtro por nome e ordenação.")
-    public Response listar(@BeanParam ArtistaFilter filter) {
-        return Response.ok(service.listar(filter)).build();
+    @Operation(summary = "Listar artistas", description = "Retorna uma lista paginada de artistas com opção de filtro por nome e ordenação.")
+    public Response listar(@BeanParam PageRequest pageRequest,
+                           @QueryParam("nome") String nome,
+                           @QueryParam("sort") @DefaultValue("asc") String sort) {
+        return Response.ok(service.listar(pageRequest, nome, sort)).build();
     }
 
     @GET

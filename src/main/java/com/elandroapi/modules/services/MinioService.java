@@ -1,6 +1,5 @@
 package com.elandroapi.modules.services;
 
-import com.elandroapi.modules.entities.CapaAlbum;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
@@ -8,6 +7,7 @@ import io.minio.RemoveObjectArgs;
 import io.minio.http.Method;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.InputStream;
 import java.time.Duration;
@@ -18,36 +18,41 @@ public class MinioService {
     @Inject
     MinioClient minio;
 
+    @ConfigProperty(name = "minio.bucket-name")
+    String bucketName;
+
     private static final Duration URL_EXPIRATION = Duration.ofMinutes(30);
 
-    public void enviar(String bucket, String filename, InputStream input, long size, String contentType) throws Exception {
+
+    public void enviar(String filename, InputStream input) throws Exception {
         minio.putObject(
                 PutObjectArgs.builder()
-                        .bucket(bucket)
+                        .bucket(bucketName)
                         .object(filename)
-                        .stream(input, size, -1)
-                        .contentType(contentType)
+                        .stream(input, -1, 10485760)
                         .build()
         );
     }
 
-    public String gerarUrl(CapaAlbum capa) throws Exception {
+    public String gerarUrl(String filename) throws Exception {
         return minio.getPresignedObjectUrl(
                 GetPresignedObjectUrlArgs.builder()
                         .method(Method.GET)
-                        .bucket(capa.getBucket())
-                        .object(capa.getHash())
+                        .bucket(bucketName)
+                        .object(filename)
                         .expiry((int)URL_EXPIRATION.getSeconds())
                         .build()
         );
     }
 
-    public void remove(CapaAlbum capa) throws Exception {
+    public void remove(String bucket, String objectName) throws Exception {
         minio.removeObject(
                 RemoveObjectArgs.builder()
-                        .bucket(capa.getBucket())
-                        .object(capa.getHash())
+                        .bucket(bucket)
+                        .object(objectName)
                         .build()
         );
     }
+
 }
+

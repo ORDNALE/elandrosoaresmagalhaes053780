@@ -8,10 +8,17 @@ import io.smallrye.jwt.auth.principal.ParseException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @ApplicationScoped
 public class AuthService {
+
+    @ConfigProperty(name = "app.auth.username")
+    String authUsername;
+
+    @ConfigProperty(name = "app.auth.password")
+    String authPassword;
 
     @Inject
     JwtService jwtService;
@@ -21,8 +28,8 @@ public class AuthService {
 
     public TokenResponse login(LoginRequest request) {
 
-        if (!"admin".equals(request.username())
-                || !"admin".equals(request.password())) {
+        if (!authUsername.equals(request.username())
+                || !authPassword.equals(request.password())) {
             throw new WebApplicationException("Credenciais inválidas", 401);
         }
 
