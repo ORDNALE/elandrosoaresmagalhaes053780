@@ -1,20 +1,31 @@
 package com.elandroapi.modules.controllers;
 
 import com.elandroapi.core.pagination.PageRequest;
+import com.elandroapi.core.pagination.Paged;
+import com.elandroapi.modules.dto.request.ArtistaFilterRequest;
 import com.elandroapi.modules.dto.request.ArtistaRequest;
+import com.elandroapi.modules.dto.response.ArtistaResponse;
 import com.elandroapi.modules.services.ArtistaService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/v1/artistas")
-@Tag(name = "Artista", description = "Gerenciamento de artistas")
+@Tag(name = "Artista", description = "Gerenciamento de artistas (cantores solo e bandas)")
 @SecurityRequirement(name = "jwt")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class ArtistaController {
 
     @Inject
@@ -22,43 +33,108 @@ public class ArtistaController {
 
     @GET
     @RolesAllowed({"USER", "ADMIN"})
-    @Operation(summary = "Listar artistas", description = "Retorna uma lista paginada de artistas com opção de filtro por nome e ordenação.")
-    public Response listar(@BeanParam PageRequest pageRequest,
-                           @QueryParam("nome") String nome,
-                           @QueryParam("sort") @DefaultValue("asc") String sort) {
-        return Response.ok(service.listar(pageRequest, nome, sort)).build();
+    @Operation(
+            summary = "Listar artistas",
+            description = "Retorna uma lista paginada de artistas com filtros opcionais por nome, tipo (SOLO/BANDA) e ordenação alfabética."
+    )
+    @APIResponses({
+            @APIResponse(
+                    responseCode = "200",
+                    description = "Lista de artistas retornada com sucesso",
+                    content = @Content(schema = @Schema(implementation = Paged.class))
+            ),
+            @APIResponse(responseCode = "401", description = "Token JWT inválido ou expirado"),
+            @APIResponse(responseCode = "403", description = "Acesso negado")
+    })
+    public Response listar(
+            @BeanParam PageRequest pageRequest,
+            @BeanParam ArtistaFilterRequest filter) {
+        return Response.ok(service.listar(pageRequest, filter)).build();
     }
 
     @GET
-    @RolesAllowed({"USER", "ADMIN"})
     @Path("/{id}")
-    @Operation(summary = "Buscar artista por ID", description = "Retorna os detalhes de um artista específico.")
-    public Response buscar(@PathParam("id") Long id) {
+    @RolesAllowed({"USER", "ADMIN"})
+    @Operation(
+            summary = "Buscar artista por ID",
+            description = "Retorna os detalhes de um artista específico."
+    )
+    @APIResponses({
+            @APIResponse(
+                    responseCode = "200",
+                    description = "Artista encontrado",
+                    content = @Content(schema = @Schema(implementation = ArtistaResponse.class))
+            ),
+            @APIResponse(responseCode = "404", description = "Artista não encontrado"),
+            @APIResponse(responseCode = "401", description = "Token JWT inválido ou expirado")
+    })
+    public Response buscar(
+            @Parameter(description = "ID do artista", required = true)
+            @PathParam("id") Long id) {
         return Response.ok(service.buscar(id)).build();
     }
 
     @POST
     @RolesAllowed({"ADMIN"})
-    @Operation(summary = "Criar novo artista", description = "Cria um novo artista com os dados fornecidos.")
+    @Operation(
+            summary = "Criar novo artista",
+            description = "Cria um novo artista com os dados fornecidos. Requer permissão de ADMIN."
+    )
+    @APIResponses({
+            @APIResponse(
+                    responseCode = "201",
+                    description = "Artista criado com sucesso",
+                    content = @Content(schema = @Schema(implementation = ArtistaResponse.class))
+            ),
+            @APIResponse(responseCode = "400", description = "Dados inválidos"),
+            @APIResponse(responseCode = "401", description = "Token JWT inválido ou expirado"),
+            @APIResponse(responseCode = "403", description = "Acesso negado - requer permissão ADMIN")
+    })
     public Response salvar(@Valid ArtistaRequest request) {
-        return Response.ok(service.salvar(request)).status(Response.Status.CREATED).build();
+        return Response.status(Response.Status.CREATED)
+                .entity(service.salvar(request))
+                .build();
     }
 
-    @Path("/{id}")
     @PUT
+    @Path("/{id}")
     @RolesAllowed({"ADMIN"})
-    @Operation(summary = "Atualizar artista", description = "Atualiza os dados de um artista existente.")
-    public Response atualizar(@PathParam("id") Long id, ArtistaRequest request) {
+    @Operation(
+            summary = "Atualizar artista",
+            description = "Atualiza os dados de um artista existente. Requer permissão de ADMIN."
+    )
+    @APIResponses({
+            @APIResponse(responseCode = "200", description = "Artista atualizado com sucesso"),
+            @APIResponse(responseCode = "400", description = "Dados inválidos"),
+            @APIResponse(responseCode = "404", description = "Artista não encontrado"),
+            @APIResponse(responseCode = "401", description = "Token JWT inválido ou expirado"),
+            @APIResponse(responseCode = "403", description = "Acesso negado - requer permissão ADMIN")
+    })
+    public Response atualizar(
+            @Parameter(description = "ID do artista", required = true)
+            @PathParam("id") Long id,
+            @Valid ArtistaRequest request) {
         service.atualizar(id, request);
         return Response.ok().build();
     }
 
-    @Path("/{id}")
     @DELETE
+    @Path("/{id}")
     @RolesAllowed({"ADMIN"})
-    @Operation(summary = "Excluir artista", description = "Remove um artista do sistema.")
-    public Response excluir(@PathParam("id") Long id) {
+    @Operation(
+            summary = "Excluir artista",
+            description = "Remove um artista do sistema. Requer permissão de ADMIN."
+    )
+    @APIResponses({
+            @APIResponse(responseCode = "204", description = "Artista excluído com sucesso"),
+            @APIResponse(responseCode = "404", description = "Artista não encontrado"),
+            @APIResponse(responseCode = "401", description = "Token JWT inválido ou expirado"),
+            @APIResponse(responseCode = "403", description = "Acesso negado - requer permissão ADMIN")
+    })
+    public Response excluir(
+            @Parameter(description = "ID do artista", required = true)
+            @PathParam("id") Long id) {
         service.excluir(id);
-        return Response.ok().status(Response.Status.NO_CONTENT).build();
+        return Response.noContent().build();
     }
 }
