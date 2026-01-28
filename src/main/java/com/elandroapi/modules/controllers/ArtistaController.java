@@ -2,9 +2,12 @@ package com.elandroapi.modules.controllers;
 
 import com.elandroapi.core.pagination.PageRequest;
 import com.elandroapi.core.pagination.Paged;
+import com.elandroapi.modules.dto.request.AlbumRequest;
 import com.elandroapi.modules.dto.request.ArtistaFilterRequest;
 import com.elandroapi.modules.dto.request.ArtistaRequest;
+import com.elandroapi.modules.dto.response.AlbumResponse;
 import com.elandroapi.modules.dto.response.ArtistaResponse;
+import com.elandroapi.modules.services.AlbumService;
 import com.elandroapi.modules.services.ArtistaService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -30,6 +33,9 @@ public class ArtistaController {
 
     @Inject
     ArtistaService service;
+
+    @Inject
+    AlbumService albumService;
 
     @GET
     @RolesAllowed({"USER", "ADMIN"})
@@ -93,6 +99,33 @@ public class ArtistaController {
     public Response salvar(@Valid ArtistaRequest request) {
         return Response.status(Response.Status.CREATED)
                 .entity(service.salvar(request))
+                .build();
+    }
+
+    @POST
+    @Path("/{artistaId}/albuns")
+    @RolesAllowed({"ADMIN"})
+    @Operation(
+            summary = "Criar novo álbum para um artista",
+            description = "Cria um novo álbum para um artista específico. Requer permissão de ADMIN."
+    )
+    @APIResponses({
+            @APIResponse(
+                    responseCode = "201",
+                    description = "Álbum criado com sucesso",
+                    content = @Content(schema = @Schema(implementation = AlbumResponse.class))
+            ),
+            @APIResponse(responseCode = "400", description = "Dados inválidos"),
+            @APIResponse(responseCode = "404", description = "Artista não encontrado"),
+            @APIResponse(responseCode = "401", description = "Token JWT inválido ou expirado"),
+            @APIResponse(responseCode = "403", description = "Acesso negado - requer permissão ADMIN")
+    })
+    public Response salvarAlbum(
+            @Parameter(description = "ID do artista", required = true)
+            @PathParam("artistaId") Long artistaId,
+            @Valid AlbumRequest request) {
+        return Response.status(Response.Status.CREATED)
+                .entity(albumService.salvar(artistaId, request))
                 .build();
     }
 

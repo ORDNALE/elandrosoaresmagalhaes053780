@@ -2,44 +2,23 @@ package com.elandroapi.modules.mappers;
 
 import com.elandroapi.modules.dto.request.ArtistaRequest;
 import com.elandroapi.modules.dto.response.ArtistaResponse;
-import com.elandroapi.modules.entities.Album;
 import com.elandroapi.modules.entities.Artista;
-import com.elandroapi.modules.repositories.AlbumRepository;
-import jakarta.inject.Inject;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
-@Mapper(componentModel = MappingConstants.ComponentModel.JAKARTA_CDI)
+@Mapper(componentModel = MappingConstants.ComponentModel.JAKARTA_CDI, uses = {AlbumMapper.class})
 public abstract class ArtistaMapper {
 
-    @Inject
-    AlbumRepository albumRepository;
-
-    @Mapping(target = "albuns", source = "albuns", qualifiedByName = "mapAlbuns")
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "albuns", ignore = true) // Albuns são gerenciados no lado do Album
     public abstract Artista toModel(ArtistaRequest request);
 
     public abstract ArtistaResponse toResponse(Artista model);
 
-    @Mapping(target = "albuns", source = "albuns", qualifiedByName = "mapAlbuns")
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "albuns", ignore = true) // Albuns são gerenciados no lado do Album
     public abstract void updateModelFromRequest(@MappingTarget Artista model, ArtistaRequest request);
 
-    @Named("mapAlbuns")
-    protected List<Album> mapAlbuns(List<ArtistaRequest.AlbumId> albumIds) {
-        if (albumIds == null || albumIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return albumIds.stream()
-                .map(albumId -> albumRepository.findById(albumId.getId()))
-                .filter(Objects::nonNull)
-                .toList();
-    }
 }

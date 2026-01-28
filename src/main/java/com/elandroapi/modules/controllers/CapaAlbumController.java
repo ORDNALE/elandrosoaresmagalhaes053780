@@ -105,7 +105,7 @@ public class CapaAlbumController {
             @PathParam("albumId") Long albumId,
             @Parameter(description = "ID da capa", required = true)
             @PathParam("capaId") Long capaId) {
-        return Response.ok(service.buscarCapa(albumId, capaId)).build();
+        return Response.ok(service.gerarLinkCapa(albumId, capaId)).build();
     }
 
     @DELETE

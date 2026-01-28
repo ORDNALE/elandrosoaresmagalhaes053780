@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
 public class ArtistaRequest {
 
     @NotBlank(message = "nome deve ser informado")
+    @Schema(examples = "Tonnin do violino")
     private String nome;
 
     @NotNull(message = "tipo deve ser informado")
