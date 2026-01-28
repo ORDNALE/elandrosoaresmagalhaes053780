@@ -6,11 +6,9 @@ import com.elandroapi.modules.entities.CapaAlbum;
 import com.elandroapi.modules.mappers.CapaAlbumMapper;
 import com.elandroapi.modules.repositories.AlbumRepository;
 import com.elandroapi.modules.repositories.CapaAlbumRepository;
-import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
-import io.minio.http.Method;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -24,7 +22,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @ApplicationScoped
 public class CapaAlbumService {
@@ -43,6 +40,7 @@ public class CapaAlbumService {
 
     @ConfigProperty(name = "minio.bucket-name")
     String bucketName;
+
 
     @Transactional
     public List<CapaAlbumResponse> uploadCapas(Long albumId, List<FileUpload> files) {
@@ -98,21 +96,7 @@ public class CapaAlbumService {
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Capa %s não encontrada no álbum %s", capaId, albumId)));
 
-        try {
-            String url = minioClient.getPresignedObjectUrl(
-                    GetPresignedObjectUrlArgs.builder()
-                            .method(Method.GET)
-                            .bucket(capa.getBucket())
-                            .object(capa.getHash())
-                            .expiry(30, TimeUnit.MINUTES)
-                            .build());
-
-            CapaAlbumResponse response = mapper.toResponse(capa);
-            response.setUrl(url);
-            return response;
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao gerar link para a capa: " + capa.getHash(), e);
-        }
+        return mapper.toResponse(capa);
     }
 
     private CapaAlbum uploadCapa(Album album, FileUpload file) {

@@ -6,7 +6,6 @@ import com.elandroapi.modules.entities.CapaAlbum;
 import com.elandroapi.modules.mappers.CapaAlbumMapper;
 import com.elandroapi.modules.repositories.AlbumRepository;
 import com.elandroapi.modules.repositories.CapaAlbumRepository;
-import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.RemoveObjectArgs;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
@@ -67,17 +66,18 @@ class CapaAlbumServiceTest {
 
     @Test
     void deveGerarLinkDeCapaComSucesso() throws Exception {
-        String fakeUrl = "http://minio.test/test-bucket/test-hash?presigned";
+        String fakeUrl = "http://localhost:19000/test-bucket/test-hash?presigned";
+        capaAlbumResponse.setUrl(fakeUrl);
         when(albumRepository.findByIdOptional(1L)).thenReturn(Optional.of(album));
         when(repository.find("id = ?1 and album.id = ?2", 100L, 1L)).thenReturn(panacheQuery);
         when(panacheQuery.firstResultOptional()).thenReturn(Optional.of(capaAlbum));
-        when(minioClient.getPresignedObjectUrl(any(GetPresignedObjectUrlArgs.class))).thenReturn(fakeUrl);
         when(mapper.toResponse(capaAlbum)).thenReturn(capaAlbumResponse);
 
         CapaAlbumResponse response = service.gerarLinkCapa(1L, 100L);
 
         assertNotNull(response);
         assertEquals(fakeUrl, response.getUrl());
+        verify(mapper).toResponse(capaAlbum);
     }
 
     @Test
