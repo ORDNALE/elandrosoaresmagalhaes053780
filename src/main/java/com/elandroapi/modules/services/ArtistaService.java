@@ -2,13 +2,12 @@ package com.elandroapi.modules.services;
 
 import com.elandroapi.core.pagination.PageRequest;
 import com.elandroapi.core.pagination.Paged;
+import com.elandroapi.modules.dto.request.ArtistaFilterRequest;
 import com.elandroapi.modules.dto.request.ArtistaRequest;
 import com.elandroapi.modules.dto.response.ArtistaResponse;
 import com.elandroapi.modules.entities.Artista;
 import com.elandroapi.modules.mappers.ArtistaMapper;
 import com.elandroapi.modules.repositories.ArtistaRepository;
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
-import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -23,17 +22,8 @@ public class ArtistaService {
     @Inject
     ArtistaMapper mapper;
 
-    public Paged<ArtistaResponse> listar(PageRequest pageRequest, String nome, String sort) {
-        Sort.Direction direction = "desc".equalsIgnoreCase(sort) ? Sort.Direction.Descending : Sort.Direction.Ascending;
-        Sort sortOrder = Sort.by("nome").direction(direction);
-
-        PanacheQuery<Artista> query;
-        if (nome == null || nome.isBlank()) {
-            query = repository.findAll(sortOrder);
-        } else {
-            query = repository.find("lower(nome) like lower(?1)", sortOrder, "%" + nome + "%");
-        }
-
+    public Paged<ArtistaResponse> listar(PageRequest pageRequest, ArtistaFilterRequest filter) {
+        var query = repository.findByFilters(filter);
         query.page(pageRequest.toPage());
 
         var content = query.list().stream()

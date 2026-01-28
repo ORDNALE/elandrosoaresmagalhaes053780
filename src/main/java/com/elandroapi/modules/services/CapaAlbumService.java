@@ -8,9 +8,11 @@ import com.elandroapi.modules.repositories.AlbumRepository;
 import com.elandroapi.modules.repositories.CapaAlbumRepository;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
@@ -18,10 +20,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class CapaAlbumService {
@@ -43,44 +43,86 @@ public class CapaAlbumService {
 
     @Transactional
     public List<CapaAlbumResponse> uploadCapas(Long albumId, List<FileUpload> files) {
-        Album album = albumRepository.findByIdOptional(albumId)
-                .orElseThrow(() -> new jakarta.ws.rs.NotFoundException("Álbum não encontrado"));
+        Album album = buscarAlbum(albumId);
 
-        List<CapaAlbum> capas = new ArrayList<>();
+        return files.stream()
+                .map(file -> uploadCapa(album, file))
+                .map(mapper::toResponse)
+                .toList();
+    }
 
-        for (FileUpload file : files) {
-            String extension = getExtension(file.fileName());
-            String hash = generateHash(extension);
+    public List<CapaAlbumResponse> listarCapas(Long albumId) {
+        buscarAlbum(albumId);
+        return repository.find("album.id", albumId).list().stream()
+                .map(mapper::toResponse)
+                .toList();
+    }
 
-            try (InputStream is = Files.newInputStream(file.filePath())) {
-                minioClient.putObject(
-                        PutObjectArgs.builder()
-                                .bucket(bucketName)
-                                .object(hash)
-                                .stream(is, file.size(), -1)
-                                .contentType(file.contentType())
-                                .build());
+    public CapaAlbumResponse buscarCapa(Long albumId, Long capaId) {
+        buscarAlbum(albumId);
+        CapaAlbum capa = repository.find("id = ?1 and album.id = ?2", capaId, albumId)
+                .firstResultOptional()
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Capa %s não encontrada no álbum %s", capaId, albumId)));
+        return mapper.toResponse(capa);
+    }
 
-                CapaAlbum capa = new CapaAlbum();
-                capa.setAlbum(album);
-                capa.setBucket(bucketName);
-                capa.setHash(hash);
-                capa.setContentType(file.contentType());
-                capa.setTamanho(file.size());
+    @Transactional
+    public void excluirCapa(Long albumId, Long capaId) {
+        buscarAlbum(albumId);
+        CapaAlbum capa = repository.find("id = ?1 and album.id = ?2", capaId, albumId)
+                .firstResultOptional()
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Capa %s não encontrada no álbum %s", capaId, albumId)));
 
-                repository.persist(capa);
-                capas.add(capa);
-            } catch (Exception e) {
-                throw new RuntimeException("Erro ao fazer upload da imagem: " + file.fileName(), e);
-            }
+        try {
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(capa.getBucket())
+                            .object(capa.getHash())
+                            .build());
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao remover imagem do MinIO: " + capa.getHash(), e);
         }
 
-        return capas.stream().map(mapper::toResponse).collect(Collectors.toList());
+        repository.delete(capa);
+    }
+
+    private CapaAlbum uploadCapa(Album album, FileUpload file) {
+        String extension = getExtension(file.fileName());
+        String hash = generateHash(extension);
+
+        try (InputStream is = Files.newInputStream(file.filePath())) {
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(hash)
+                            .stream(is, file.size(), -1)
+                            .contentType(file.contentType())
+                            .build());
+
+            CapaAlbum capa = new CapaAlbum();
+            capa.setAlbum(album);
+            capa.setBucket(bucketName);
+            capa.setHash(hash);
+            capa.setContentType(file.contentType());
+            capa.setTamanho(file.size());
+
+            repository.persist(capa);
+            return capa;
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao fazer upload da imagem: " + file.fileName(), e);
+        }
+    }
+
+    private Album buscarAlbum(Long albumId) {
+        return albumRepository.findByIdOptional(albumId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Álbum %s não encontrado", albumId)));
     }
 
     private String generateHash(String extension) {
-        LocalDate now = LocalDate.now();
-        String datePath = now.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+        String datePath = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
         String uuid = UUID.randomUUID().toString();
         return String.format("%s/%s%s", datePath, uuid, extension);
     }
