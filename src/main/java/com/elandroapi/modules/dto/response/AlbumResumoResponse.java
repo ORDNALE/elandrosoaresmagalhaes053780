@@ -3,14 +3,11 @@ package com.elandroapi.modules.dto.response;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
-public class AlbumResponse {
+public class AlbumResumoResponse {
 
     private Long id;
     private String titulo;
-    private ArtistaResumoResponse artista;
-    private List<CapaAlbumResponse> capas;
+
 }

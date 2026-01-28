@@ -8,8 +8,9 @@ import com.elandroapi.modules.entities.Artista;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.JAKARTA_CDI, uses = {CapaAlbumMapper.class})
+@Mapper(componentModel = MappingConstants.ComponentModel.JAKARTA_CDI, uses = {CapaAlbumMapper.class}, unmappedSourcePolicy = ReportingPolicy.IGNORE, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface AlbumMapper {
 
     Album toModel(AlbumRequest request);

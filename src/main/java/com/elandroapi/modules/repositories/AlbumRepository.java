@@ -16,14 +16,14 @@ import java.util.Map;
 public class AlbumRepository implements PanacheRepository<Album> {
 
     public PanacheQuery<Album> findByFilters(AlbumFilterRequest filter) {
-        StringBuilder query = new StringBuilder("SELECT DISTINCT alb FROM Album alb");
+        StringBuilder query = new StringBuilder("SELECT alb FROM Album alb");
         List<String> conditions = new ArrayList<>();
         Map<String, Object> params = new HashMap<>();
 
         boolean needsJoin = filter.hasNomeArtista() || filter.hasTipos();
 
         if (needsJoin) {
-            query.append(" JOIN alb.artistas art");
+            query.append(" JOIN alb.artista art");
         }
 
         if (filter.hasNomeArtista()) {

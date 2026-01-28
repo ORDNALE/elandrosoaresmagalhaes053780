@@ -57,7 +57,7 @@ public class AlbumController {
     @RolesAllowed({"USER", "ADMIN"})
     @Operation(
             summary = "Buscar álbum por ID",
-            description = "Retorna os detalhes de um álbum específico, incluindo artistas e capas."
+            description = "Retorna os detalhes de um álbum específico, incluindo artista e capas."
     )
     @APIResponses({
             @APIResponse(
@@ -72,28 +72,6 @@ public class AlbumController {
             @Parameter(description = "ID do álbum", required = true)
             @PathParam("id") Long id) {
         return Response.ok(service.buscar(id)).build();
-    }
-
-    @POST
-    @RolesAllowed({"ADMIN"})
-    @Operation(
-            summary = "Criar novo álbum",
-            description = "Cria um novo álbum com os dados fornecidos. Requer permissão de ADMIN."
-    )
-    @APIResponses({
-            @APIResponse(
-                    responseCode = "201",
-                    description = "Álbum criado com sucesso",
-                    content = @Content(schema = @Schema(implementation = AlbumResponse.class))
-            ),
-            @APIResponse(responseCode = "400", description = "Dados inválidos"),
-            @APIResponse(responseCode = "401", description = "Token JWT inválido ou expirado"),
-            @APIResponse(responseCode = "403", description = "Acesso negado - requer permissão ADMIN")
-    })
-    public Response salvar(@Valid AlbumRequest request) {
-        return Response.status(Response.Status.CREATED)
-                .entity(service.salvar(request))
-                .build();
     }
 
     @PUT
