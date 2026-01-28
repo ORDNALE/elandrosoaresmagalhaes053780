@@ -27,8 +27,9 @@ public class Album {
     @Column(name = "titulo")
     private String titulo;
 
-    @ManyToMany(mappedBy = "albuns")
-    private List<Artista> artistas;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "artista_id")
+    private Artista artista;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CapaAlbum> capas;

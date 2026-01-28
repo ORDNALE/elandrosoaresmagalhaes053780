@@ -24,8 +24,7 @@ public class Artista {
     @Column(name = "nome")
     private String nome;
 
-    @ManyToMany
-    @JoinTable(name = "artista_album", joinColumns = @JoinColumn(name = "artista_id"), inverseJoinColumns = @JoinColumn(name = "album_id"))
+    @OneToMany(mappedBy = "artista", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Album> albuns;
 
     @Column(name = "tipo")
