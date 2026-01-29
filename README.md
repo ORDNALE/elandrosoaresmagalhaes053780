@@ -107,3 +107,6 @@ Importa e sincroniza dados de uma API externa.
 
 ### 🛡️ Rate Limit
 Limita clientes a **10 requisições por minuto** para proteger a API contra abusos.
+
+### 🗄️ Carga Inicial
+O banco é populado automaticamente via Flyway com dados de exemplo para demonstrar o relacionamento N:N entre Artistas e Álbuns.
