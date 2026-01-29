@@ -1,9 +1,12 @@
 package com.elandroapi.modules.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,4 +16,7 @@ public class AlbumRequest {
     @Schema(examples = "ao vivo em narnia")
     private String titulo;
 
+    @NotEmpty(message = "artistaIds deve conter ao menos um artista")
+    @Schema(description = "IDs dos artistas do álbum", examples = "[1, 2]")
+    private List<Long> artistaIds;
 }

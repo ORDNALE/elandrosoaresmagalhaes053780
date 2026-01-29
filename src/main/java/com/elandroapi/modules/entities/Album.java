@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,12 +28,14 @@ public class Album {
     @Column(name = "titulo")
     private String titulo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "artista_id")
-    private Artista artista;
+    @ManyToMany
+    @JoinTable(
+            name = "artista_album",
+            joinColumns = @JoinColumn(name = "album_id"),
+            inverseJoinColumns = @JoinColumn(name = "artista_id")
+    )
+    private List<Artista> artistas = new ArrayList<>();
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CapaAlbum> capas;
-
-
 }

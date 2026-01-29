@@ -57,7 +57,7 @@ public class AlbumController {
     @RolesAllowed({"USER", "ADMIN"})
     @Operation(
             summary = "Buscar álbum por ID",
-            description = "Retorna os detalhes de um álbum específico, incluindo artista e capas."
+            description = "Retorna os detalhes de um álbum específico, incluindo artistas e capas."
     )
     @APIResponses({
             @APIResponse(
@@ -74,17 +74,40 @@ public class AlbumController {
         return Response.ok(service.buscar(id)).build();
     }
 
+    @POST
+    @RolesAllowed({"ADMIN"})
+    @Operation(
+            summary = "Criar novo álbum",
+            description = "Cria um novo álbum com os artistas informados. Requer permissão de ADMIN."
+    )
+    @APIResponses({
+            @APIResponse(
+                    responseCode = "201",
+                    description = "Álbum criado com sucesso",
+                    content = @Content(schema = @Schema(implementation = AlbumResponse.class))
+            ),
+            @APIResponse(responseCode = "400", description = "Dados inválidos"),
+            @APIResponse(responseCode = "404", description = "Artista não encontrado"),
+            @APIResponse(responseCode = "401", description = "Token JWT inválido ou expirado"),
+            @APIResponse(responseCode = "403", description = "Acesso negado - requer permissão ADMIN")
+    })
+    public Response salvar(@Valid AlbumRequest request) {
+        return Response.status(Response.Status.CREATED)
+                .entity(service.salvar(request))
+                .build();
+    }
+
     @PUT
     @Path("/{id}")
     @RolesAllowed({"ADMIN"})
     @Operation(
             summary = "Atualizar álbum",
-            description = "Atualiza os dados de um álbum existente. Requer permissão de ADMIN."
+            description = "Atualiza os dados de um álbum existente, incluindo artistas. Requer permissão de ADMIN."
     )
     @APIResponses({
             @APIResponse(responseCode = "200", description = "Álbum atualizado com sucesso"),
             @APIResponse(responseCode = "400", description = "Dados inválidos"),
-            @APIResponse(responseCode = "404", description = "Álbum não encontrado"),
+            @APIResponse(responseCode = "404", description = "Álbum ou artista não encontrado"),
             @APIResponse(responseCode = "401", description = "Token JWT inválido ou expirado"),
             @APIResponse(responseCode = "403", description = "Acesso negado - requer permissão ADMIN")
     })

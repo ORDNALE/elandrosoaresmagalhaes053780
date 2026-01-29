@@ -11,6 +11,6 @@ public class AlbumResponse {
 
     private Long id;
     private String titulo;
-    private ArtistaResumoResponse artista;
+    private List<ArtistaResumoResponse> artistas;
     private List<CapaAlbumResponse> capas;
 }

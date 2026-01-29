@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,18 +19,16 @@ public class Artista {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "artista_id_seq")
-    @SequenceGenerator(name = "artista_id_seq", sequenceName = "artista_id_seq",  allocationSize = 1)
+    @SequenceGenerator(name = "artista_id_seq", sequenceName = "artista_id_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "nome")
     private String nome;
 
-    @OneToMany(mappedBy = "artista", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Album> albuns;
+    @ManyToMany(mappedBy = "artistas")
+    private List<Album> albuns = new ArrayList<>();
 
     @Column(name = "tipo")
     @Enumerated(EnumType.STRING)
     private TipoArtista tipo;
-
-
 }

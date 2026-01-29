@@ -16,14 +16,14 @@ import java.util.Map;
 public class AlbumRepository implements PanacheRepository<Album> {
 
     public PanacheQuery<Album> findByFilters(AlbumFilterRequest filter) {
-        StringBuilder query = new StringBuilder("SELECT alb FROM Album alb");
+        StringBuilder query = new StringBuilder("SELECT DISTINCT alb FROM Album alb");
         List<String> conditions = new ArrayList<>();
         Map<String, Object> params = new HashMap<>();
 
         boolean needsJoin = filter.hasNomeArtista() || filter.hasTipos();
 
         if (needsJoin) {
-            query.append(" JOIN alb.artista art");
+            query.append(" JOIN alb.artistas art");
         }
 
         if (filter.hasNomeArtista()) {
@@ -44,11 +44,8 @@ public class AlbumRepository implements PanacheRepository<Album> {
                 ? Sort.Direction.Descending
                 : Sort.Direction.Ascending;
 
-        if (needsJoin) {
-            query.append(" ORDER BY art.nome ").append(direction == Sort.Direction.Descending ? "DESC" : "ASC");
-            return find(query.toString(), params);
-        }
+        query.append(" ORDER BY alb.titulo ").append(direction == Sort.Direction.Descending ? "DESC" : "ASC");
 
-        return find(query.toString(), Sort.by("titulo").direction(direction), params);
+        return find(query.toString(), params);
     }
 }

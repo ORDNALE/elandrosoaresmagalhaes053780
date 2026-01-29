@@ -15,7 +15,10 @@ import com.elandroapi.websocket.AlbumWebSocket;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
+
+import java.util.List;
 
 @ApplicationScoped
 public class AlbumService {
@@ -48,12 +51,11 @@ public class AlbumService {
     }
 
     @Transactional
-    public AlbumResponse salvar(Long artistaId, AlbumRequest request) {
-        Artista artista = artistaRepository.findByIdOptional(artistaId)
-                .orElseThrow(() -> new NotFoundException(String.format("Artista %s não encontrado", artistaId)));
+    public AlbumResponse salvar(AlbumRequest request) {
+        List<Artista> artistas = buscarArtistas(request.getArtistaIds());
 
         var model = mapper.toModel(request);
-        model.setArtista(artista);
+        model.setArtistas(artistas);
         repository.persist(model);
 
         broadcaster.broadcast(AlbumNotificationEvent.novoAlbum(model.getId(), model.getTitulo()));
@@ -64,7 +66,10 @@ public class AlbumService {
     @Transactional
     public void atualizar(Long id, AlbumRequest request) {
         var model = buscarPorId(id);
+        List<Artista> artistas = buscarArtistas(request.getArtistaIds());
+
         mapper.updateModelFromRequest(model, request);
+        model.setArtistas(artistas);
         repository.persist(model);
     }
 
@@ -76,5 +81,23 @@ public class AlbumService {
     private Album buscarPorId(Long id) {
         return repository.findByIdOptional(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Álbum %s não encontrado", id)));
+    }
+
+    private List<Artista> buscarArtistas(List<Long> artistaIds) {
+        if (artistaIds == null || artistaIds.isEmpty()) {
+            throw new BadRequestException("artistaIds deve conter ao menos um artista");
+        }
+
+        List<Artista> artistas = artistaRepository.list("id IN ?1", artistaIds);
+
+        if (artistas.size() != artistaIds.size()) {
+            List<Long> encontrados = artistas.stream().map(Artista::getId).toList();
+            List<Long> naoEncontrados = artistaIds.stream()
+                    .filter(id -> !encontrados.contains(id))
+                    .toList();
+            throw new NotFoundException(String.format("Artistas não encontrados: %s", naoEncontrados));
+        }
+
+        return artistas;
     }
 }
