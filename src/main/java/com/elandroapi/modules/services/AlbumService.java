@@ -10,6 +10,8 @@ import com.elandroapi.modules.entities.Artista;
 import com.elandroapi.modules.mappers.AlbumMapper;
 import com.elandroapi.modules.repositories.AlbumRepository;
 import com.elandroapi.modules.repositories.ArtistaRepository;
+import com.elandroapi.websocket.AlbumNotificationEvent;
+import com.elandroapi.websocket.AlbumWebSocket;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -26,6 +28,9 @@ public class AlbumService {
 
     @Inject
     AlbumMapper mapper;
+
+    @Inject
+    AlbumWebSocket.Broadcaster broadcaster;
 
     public Paged<AlbumResponse> listar(PageRequest pageRequest, AlbumFilterRequest filter) {
         var query = repository.findByFilters(filter);
@@ -50,6 +55,9 @@ public class AlbumService {
         var model = mapper.toModel(request);
         model.setArtista(artista);
         repository.persist(model);
+
+        broadcaster.broadcast(AlbumNotificationEvent.novoAlbum(model.getId(), model.getTitulo()));
+
         return mapper.toResponse(model);
     }
 
