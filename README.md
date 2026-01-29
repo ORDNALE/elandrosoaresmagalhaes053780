@@ -1,89 +1,109 @@
 # API de Gerenciamento Musical
 
-API REST para gerenciamento de artistas e álbuns, desenvolvida como parte de um processo seletivo.
+API REST desenvolvida com **Quarkus** para gerenciamento de artistas e álbuns, implementando Clean Architecture e boas práticas de desenvolvimento.
 
 ---
 
-## 🧰 Requisitos
+## 👤 Feito por
 
-- Java 21
-- Docker
-- Docker Compose
-- Maven 3.9+
+| Campo | Dados |
+|-------|-------|
+| **Nome** | Elandro Soares Magalhães |
+| **CPF** | 053.780.761-61 |
+| **Contato** | (65) 99323-6344 |
+| **Email** | elandro10@outlook.com |
+| **Inscrição** | 16514 |
+| **Processo Seletivo** | SEPLAG 001/2026/SEPLAG |
+| **Vaga** | Engenheiro da Computação Sênior |
 
 ---
 
 ## 🚀 Como Executar
 
-Na raiz do projeto, execute os seguintes comandos:
+### Pré-requisitos
+- Java 21
+- Docker Engine 19.03+ (Compatível com Compose 3.9)
+- Docker Compose V2
+- Maven 3.9+
 
-1.  **Empacotar a aplicação com Maven:**
-    ```bash
-    ./mvnw clean package
-    ```
+### Rodar a Aplicação
+```bash
+./mvnw clean package
+docker compose up --build
+```
 
-2.  **Subir os contêineres (API + PostgreSQL + MinIO):**
-    ```bash
-    docker compose up --build -d
-    ```
-
----
-
-## 🌐 Acessos e Portas
-
-Após a execução, os seguintes serviços estarão disponíveis:
-
-- **API (Quarkus):**
-  - **URL Base:** `http://localhost:8090`
-  - **Swagger UI (Documentação):** `http://localhost:8090/swagger-ui`
-
-- **PostgreSQL (Banco de Dados):**
-  - **Host:** `localhost`
-  - **Porta:** `5444`
-  - **Database:** `musicdb`
-  - **Usuário:** `appuser`
-  - **Senha:** `app123`
-
-- **MinIO (Armazenamento de Objetos):**
-  - **Endpoint API:** `http://localhost:19000`
-  - **Console Web:** `http://localhost:19001`
-  - **Usuário:** `minioadmin`
-  - **Senha:** `minioadmin`
+### Rodar os Testes
+```bash
+./mvnw test
+```
 
 ---
 
-## 🔐 Autenticação (JWT)
+## 🌐 Acessos e Credenciais
 
-A API utiliza autenticação JWT stateless. Para acessar os endpoints protegidos, primeiro obtenha os tokens.
-
-- **Endpoint de Login:** `POST /v1/auth/login`
-  - Gera um `accessToken` (expira em 5 minutos) e um `refreshToken` (expira em 30 minutos).
-
-- **Endpoint de Renovação:** `POST /v1/auth/refresh`
-  - Gera um novo `accessToken` a partir de um `refreshToken` válido.
-
-- **Como usar:** Envie o `accessToken` no cabeçalho `Authorization` de suas requisições:
-  ```
-  Authorization: Bearer <seu-access-token>
-  ```
+| Serviço | URL / Host | Porta | Usuário | Senha |
+|---------|------------|-------|---------|-------|
+| **API** | `http://localhost:8090` | 8090 | - | - |
+| **Swagger UI** | [`/swagger-ui`](http://localhost:8090/swagger-ui) | 8090 | - | - |
+| **Liveness Probe** | [`/q/health/live`](http://localhost:8090/q/health/live) | 8090 | - | - |
+| **Readiness Probe** | [`/q/health/ready`](http://localhost:8090/q/health/ready) | 8090 | - | - |
+| **PostgreSQL** | `localhost` | 5444 | `appuser` | `app123` |
+| **MinIO API** | `http://localhost:19000` | 19000 | `minioadmin` | `minioadmin` |
+| **MinIO Console** | `http://localhost:19001` | 19001 | `minioadmin` | `minioadmin` |
 
 ---
 
-## 🔔 WebSocket (Notificações)
+## 🏗️ Arquitetura e Decisões Técnicas
 
-A API notifica em tempo real quando um novo álbum é cadastrado.
+O projeto segue os princípios da **Clean Architecture**, visando desacoplamento e testabilidade.
 
+- **Camadas:**
+  - `core`: Configurações globais, segurança (JWT), filtros e utilitários.
+  - `modules`: Divide o domínio em funcionalidades (Artistas, Álbuns, Regionais).
+    - `controllers`: Camada de entrada (REST).
+    - `services`: Regras de negócio.
+    - `repositories`: Acesso a dados (Pattern Repository com Panache).
+    - `entities`: Modelo de dados.
+    - `mappers`: Conversão entre DTOs e Entidades (MapStruct).
+
+- **Tecnologias:**
+  - **Quarkus:** Framework Java supersônico e subatômico, escolhido pela performance e baixa latência.
+  - **Hibernate Panache:** Simplifica a camada de persistência.
+  - **Flyway:** Versionamento e migração do banco de dados.
+  - **MinIO:** Armazenamento de objetos compatível com S3 (para capas de álbuns).
+  - **SmallRye JWT:** Segurança stateless robusta.
+
+### 📊 Estrutura de Dados
+O diagrama de classes e relacionamentos (incluindo N:N entre Artista e Álbum) pode ser visualizado aqui:
+👉 [Diagrama de Classes (DrawDB)](https://www.drawdb.app/editor?shareId=bcdc5c3e7f08ec1491ba96d1a53b06c5)
+
+---
+
+## ✨ Funcionalidades Específicas
+
+### 🔐 Autenticação (JWT)
+1.  **Login:** `POST /v1/auth/login` (Gera Access Token de 5min e Refresh Token de 30min).
+2.  **Refresh:** `POST /v1/auth/refresh` (Renova o acesso).
+3.  **Uso:** Envie o header `Authorization: Bearer <token>`.
+
+### 🔔 WebSocket (Notificações)
+Notifica clientes conectados quando um novo álbum é cadastrado.
 - **Endpoint:** `ws://localhost:8090/ws/albums`
+- **Teste rápido (Console do Navegador):**
+  Abra o console (F12) e cole o código abaixo para monitorar:
+  ```javascript
+  var ws = new WebSocket('ws://localhost:8090/ws/albums');
+  ws.onopen = () => console.log('✅ Conectado ao WebSocket!');
+  ws.onmessage = (e) => console.log('📩 Recebido:', JSON.parse(e.data));
+  ws.onerror = (e) => console.log('❌ Erro:', e);
+  ws.onclose = () => console.log('🔌 Desconectado');
+  ```
 
-**Como testar:**
+### 🔄 Sincronização de Regionais
+Importa e sincroniza dados de uma API externa.
+- **Automática:** Diariamente às 06:00.
+- **Manual:** `POST /v1/regionais/sync` (Requer permissão ADMIN).
+- **Lógica:** Insere novos registros, inativa os ausentes e atualiza os modificados (versionamento).
 
-1. Acesse o Swagger: `http://localhost:8090/swagger-ui`
-2. Abra o Console do navegador (`F12` → Console)
-3. Cole e execute:
-   ```javascript
-   var ws = new WebSocket('ws://localhost:8090/ws/albums');
-   ws.onopen = () => console.log('Conectado!');
-   ws.onmessage = (e) => console.log('Novo álbum:', JSON.parse(e.data));
-   ```
-4. Crie um álbum pelo Swagger
-5. A notificação aparecerá no Console
+### 🛡️ Rate Limit
+Limita clientes a **10 requisições por minuto** para proteger a API contra abusos.
