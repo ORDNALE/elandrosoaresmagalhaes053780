@@ -8,6 +8,8 @@ import com.elandroapi.modules.enums.TipoArtista;
 import com.elandroapi.modules.mappers.AlbumMapper;
 import com.elandroapi.modules.repositories.AlbumRepository;
 import com.elandroapi.modules.repositories.ArtistaRepository;
+import com.elandroapi.websocket.AlbumNotificationEvent;
+import com.elandroapi.websocket.AlbumWebSocket;
 import jakarta.ws.rs.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +40,9 @@ class AlbumServiceTest {
 
     @Mock
     AlbumMapper mapper;
+
+    @Mock
+    AlbumWebSocket.Broadcaster broadcaster;
 
     private Artista artista;
     private AlbumRequest albumRequest;
@@ -82,6 +87,8 @@ class AlbumServiceTest {
 
         assertNotNull(persistedAlbum.getArtista());
         assertEquals(1L, persistedAlbum.getArtista().getId());
+
+        verify(broadcaster).broadcast(any(AlbumNotificationEvent.class));
     }
 
     @Test
