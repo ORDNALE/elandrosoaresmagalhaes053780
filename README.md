@@ -66,3 +66,24 @@ A API utiliza autenticação JWT stateless. Para acessar os endpoints protegidos
   ```
   Authorization: Bearer <seu-access-token>
   ```
+
+---
+
+## 🔔 WebSocket (Notificações)
+
+A API notifica em tempo real quando um novo álbum é cadastrado.
+
+- **Endpoint:** `ws://localhost:8090/ws/albums`
+
+**Como testar:**
+
+1. Acesse o Swagger: `http://localhost:8090/swagger-ui`
+2. Abra o Console do navegador (`F12` → Console)
+3. Cole e execute:
+   ```javascript
+   var ws = new WebSocket('ws://localhost:8090/ws/albums');
+   ws.onopen = () => console.log('Conectado!');
+   ws.onmessage = (e) => console.log('Novo álbum:', JSON.parse(e.data));
+   ```
+4. Crie um álbum pelo Swagger
+5. A notificação aparecerá no Console
