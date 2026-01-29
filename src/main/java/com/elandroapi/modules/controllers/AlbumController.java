@@ -22,7 +22,7 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/v1/albuns")
-@Tag(name = "Álbum", description = "Gerenciamento de álbuns musicais")
+@Tag(name = "3. Álbum", description = "Gerenciamento de álbuns musicais")
 @SecurityRequirement(name = "jwt")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

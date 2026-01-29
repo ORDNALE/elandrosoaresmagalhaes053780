@@ -21,7 +21,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 import java.util.List;
 
 @Path("/v1/albuns")
-@Tag(name = "Capa de Álbum", description = "Gerenciamento de capas de álbuns no MinIO")
+@Tag(name = "4. Capa de Álbum", description = "Gerenciamento de capas de álbuns no MinIO")
 @SecurityRequirement(name = "jwt")
 @Produces(MediaType.APPLICATION_JSON)
 public class CapaAlbumController {
