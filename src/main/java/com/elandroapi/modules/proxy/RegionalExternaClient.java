@@ -1,4 +1,4 @@
-package com.elandroapi.modules.clients;
+package com.elandroapi.modules.proxy;
 
 import com.elandroapi.modules.dto.response.RegionalExternaResponse;
 import jakarta.ws.rs.GET;

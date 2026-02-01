@@ -1,6 +1,6 @@
 package com.elandroapi.modules.services;
 
-import com.elandroapi.modules.clients.RegionalExternaClient;
+import com.elandroapi.modules.proxy.RegionalExternaClient;
 import com.elandroapi.modules.dto.response.RegionalExternaResponse;
 import com.elandroapi.modules.dto.response.RegionalSyncResumoResponse;
 import com.elandroapi.modules.entities.Regional;
