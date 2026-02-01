@@ -34,7 +34,7 @@ public class AlbumController {
     @GET
     @RolesAllowed({"USER", "ADMIN"})
     @Operation(
-            summary = "Listar álbuns",
+            summary = "Buscar álbuns por filtros",
             description = "Retorna uma lista paginada de álbuns com filtros opcionais por nome do artista, tipo (SOLO/BANDA) e ordenação alfabética."
     )
     @APIResponses({

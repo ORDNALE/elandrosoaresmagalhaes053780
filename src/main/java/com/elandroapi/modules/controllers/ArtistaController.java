@@ -34,7 +34,7 @@ public class ArtistaController {
     @GET
     @RolesAllowed({"USER", "ADMIN"})
     @Operation(
-            summary = "Listar artistas",
+            summary = "Buscar artistas por filtros",
             description = "Retorna uma lista paginada de artistas com filtros opcionais por nome, tipo (SOLO/BANDA) e ordenação alfabética."
     )
     @APIResponses({

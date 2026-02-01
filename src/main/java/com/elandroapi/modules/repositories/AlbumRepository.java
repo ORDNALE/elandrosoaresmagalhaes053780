@@ -31,6 +31,11 @@ public class AlbumRepository implements PanacheRepository<Album> {
             params.put("nomeArtista", "%" + filter.getNomeArtista() + "%");
         }
 
+        if (filter.hasTituloAlbum()) {
+            conditions.add("LOWER(alb.titulo) LIKE LOWER(:tituloAlbum)");
+            params.put("tituloAlbum", "%" + filter.getTituloAlbum() + "%");
+        }
+
         if (filter.hasTipos()) {
             conditions.add("art.tipo IN :tipos");
             params.put("tipos", filter.getTipos());
