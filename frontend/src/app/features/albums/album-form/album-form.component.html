@@ -1,0 +1,190 @@
+<div class="min-h-screen bg-gradient-to-br from-[#0a0e27] via-[#1a1a3e] to-[#2d1b3d] py-8 px-4">
+  <div class="container mx-auto max-w-4xl">
+
+    <!-- Header -->
+    <div class="mb-8">
+      <a routerLink="/albums"
+         class="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors mb-4">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Voltar para Álbuns
+      </a>
+      <h1
+        class="text-4xl font-bold bg-gradient-to-r from-orange-400 via-orange-500 to-yellow-500 bg-clip-text text-transparent tracking-wider">
+        {{ isEditMode ? 'EDITAR ÁLBUM' : 'NOVO ÁLBUM' }}
+      </h1>
+      <p class="text-gray-400 mt-2">{{ isEditMode ? 'Atualize as informações do álbum' : 'Adicione um novo álbum à
+        sua biblioteca'
+        }}</p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-[#0f0f13]/60 backdrop-blur-xl rounded-lg p-8 border border-gray-700/50">
+
+      <!-- Loading State -->
+      @if ((loading$ | async) && isEditMode) {
+        <div class="flex justify-center items-center h-64">
+          <div class="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      }
+
+      <!-- Form -->
+      @if (!(loading$ | async) || !isEditMode) {
+        <form [formGroup]="albumForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+          <!-- Album Title -->
+          <div>
+            <label for="titulo" class="block text-sm font-medium text-gray-300 mb-2">
+              Título do Álbum <span class="text-red-400">*</span>
+            </label>
+            <input id="titulo" type="text" formControlName="titulo" placeholder="Digite o título do álbum"
+                   class="w-full px-4 py-3 bg-transparent border-2 border-cyan-500/60 rounded focus:outline-none focus:border-cyan-400 transition-all text-white placeholder-gray-500"
+                   [class.border-red-500]="titulo?.invalid && titulo?.touched" />
+            @if (titulo?.invalid && titulo?.touched) {
+              <div class="mt-2 space-y-1">
+                @if (titulo?.errors?.['required']) {
+                  <p class="text-red-400 text-sm">Título é obrigatório</p>
+                }
+                @if (titulo?.errors?.['minlength']) {
+                  <p class="text-red-400 text-sm">Título deve ter pelo menos 1 caractere</p>
+                }
+                @if (titulo?.errors?.['maxlength']) {
+                  <p class="text-red-400 text-sm">Título não pode exceder 200 caracteres</p>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Artist Selection -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              Selecionar Artistas <span class="text-red-400">*</span>
+            </label>
+
+            @if (loadingArtists()) {
+              <div class="flex justify-center items-center h-32">
+                <div class="w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin">
+                </div>
+              </div>
+            } @else if (availableArtists().length === 0) {
+              <div class="p-4 bg-yellow-500/10 border border-yellow-500/50 rounded text-center">
+                <p class="text-yellow-400 text-sm mb-2">Nenhum artista disponível</p>
+                <a routerLink="/artists/new" class="text-cyan-400 hover:text-cyan-300 text-sm underline">
+                  Crie um artista primeiro
+                </a>
+              </div>
+            } @else {
+              <div
+                class="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-64 overflow-y-auto p-2 bg-black/20 rounded border border-gray-700">
+                @for (artist of availableArtists(); track artist.id) {
+                  <label class="flex items-center gap-2 p-3 rounded cursor-pointer transition-all border-2"
+                         [ngClass]="{'border-cyan-500 bg-cyan-500/10': isArtistSelected(artist.id), 'border-gray-600 hover:border-cyan-500/50': !isArtistSelected(artist.id)}">
+                    <input type="checkbox" [checked]="isArtistSelected(artist.id)"
+                           (change)="toggleArtist(artist.id)"
+                           class="w-4 h-4 text-cyan-500 bg-transparent border-gray-600 rounded focus:ring-cyan-500" />
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium truncate"
+                         [ngClass]="{'text-cyan-400': isArtistSelected(artist.id), 'text-gray-300': !isArtistSelected(artist.id)}">
+                        {{ artist.nome }}</p>
+                      <p class="text-xs text-gray-500">{{ artist.tipo }}</p>
+                    </div>
+                  </label>
+                }
+              </div>
+            }
+
+            @if (artistaIds?.invalid && artistaIds?.touched) {
+              <p class="text-red-400 text-sm mt-2">Por favor selecione pelo menos um artista</p>
+            }
+          </div>
+
+          <!-- Cover Upload -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              Capa do Álbum (Opcional)
+            </label>
+            <div class="space-y-3">
+              <!-- File Input -->
+              <div class="flex items-center gap-4">
+                <label class="flex-1 cursor-pointer">
+                  <div
+                    class="flex items-center justify-center gap-2 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded transition-all border-2 border-dashed border-gray-600 hover:border-cyan-500">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                      </path>
+                    </svg>
+                    <span>Escolher Imagens</span>
+                  </div>
+                  <input type="file" accept="image/*" multiple (change)="onFileSelected($event)"
+                         class="hidden" />
+                </label>
+              </div>
+
+              <!-- Selected Files Preview -->
+              @if (selectedFiles().length > 0) {
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  @for (file of selectedFiles(); track $index) {
+                    <div class="relative group">
+                      <div class="aspect-square bg-gray-800 rounded overflow-hidden">
+                        <img [src]="filePreviewUrls()[$index]" class="w-full h-full object-cover" />
+                      </div>
+                      <button type="button" (click)="removeFile($index)"
+                              class="absolute top-2 right-2 p-1 bg-red-600 hover:bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
+                             viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                      </button>
+                      <p class="text-xs text-gray-400 mt-1 truncate">{{ file.name }}</p>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Error Message -->
+          @if (error$ | async) {
+            <div class="p-4 bg-red-500/10 border border-red-500/50 rounded">
+              <p class="text-red-400 text-sm">{{ error$ | async }}</p>
+            </div>
+          }
+
+          <!-- Action Buttons -->
+          <div class="flex gap-4 pt-4">
+            <button type="button" (click)="onCancel()"
+                    class="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded transition-all"
+                    [disabled]="loading$ | async">
+              Cancelar
+            </button>
+            <button type="submit"
+                    class="flex-1 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold rounded transition-all shadow-[0_0_20px_rgba(249,115,22,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
+                    [disabled]="albumForm.invalid || (loading$ | async)">
+              @if (loading$ | async) {
+                <span class="flex items-center justify-center gap-2">
+                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                 viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            Salvando...
+                        </span>
+              } @else {
+                {{ isEditMode ? 'Atualizar Álbum' : 'Criar Álbum' }}
+              }
+            </button>
+          </div>
+
+        </form>
+      }
+
+    </div>
+
+  </div>
+</div>
