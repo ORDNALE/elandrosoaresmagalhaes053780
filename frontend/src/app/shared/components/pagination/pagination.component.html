@@ -1,0 +1,38 @@
+@if (total > pageSize) {
+  <div
+    class="flex items-center justify-between bg-[#0f0f13]/60 backdrop-blur-xl rounded-lg p-4 border border-gray-700/50 mt-8 shadow-lg">
+
+    <!-- Info Text -->
+    <div class="hidden sm:block text-sm text-gray-400">
+      Page <span class="text-white font-medium">{{ page + 1 }}</span> of <span class="text-white font-medium">{{
+        pageCount }}</span>
+    </div>
+
+    <!-- Controls -->
+    <div class="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
+
+      <!-- Previous -->
+      <button (click)="onPageChange(page - 1)" [disabled]="page === 0"
+              class="px-4 py-2 bg-gray-700/50 hover:bg-gray-600 text-white rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed border border-transparent hover:border-gray-500 flex items-center gap-1 group">
+        <span>&larr;</span>
+        <span class="hidden sm:inline">Prev</span>
+      </button>
+
+      <!-- Pages -->
+      <div class="flex gap-1 mx-2">
+        @for (p of pages; track p) {
+          <button (click)="onPageChange(p)" [class]="getPageClasses(p)">
+            {{ p + 1 }}
+          </button>
+        }
+      </div>
+
+      <!-- Next -->
+      <button (click)="onPageChange(page + 1)" [disabled]="page >= pageCount - 1"
+              class="px-4 py-2 bg-gray-700/50 hover:bg-gray-600 text-white rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed border border-transparent hover:border-gray-500 flex items-center gap-1 group">
+        <span class="hidden sm:inline">Next</span>
+        <span>&rarr;</span>
+      </button>
+    </div>
+  </div>
+}

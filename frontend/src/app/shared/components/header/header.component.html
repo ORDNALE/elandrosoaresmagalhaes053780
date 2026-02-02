@@ -1,0 +1,58 @@
+<header
+  class="sticky top-0 z-50 bg-gradient-to-r from-[#0a0e27] via-[#1a1a3e] to-[#2d1b3d] border-b-2 border-neon-pink/30 shadow-lg">
+  <nav class="container mx-auto px-4 py-4">
+    <div class="flex items-center justify-between">
+      <!-- Logo/Title -->
+      <div class="flex items-center gap-4">
+        <a routerLink="/"
+           class="flex items-center gap-2 text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent tracking-wider hover:opacity-80 transition-opacity">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-cyan-400" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+               stroke-linejoin="round">
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
+          </svg>
+          MUSIC MANAGER
+        </a>
+      </div>
+
+      <!-- Navigation Links -->
+      @if ((isAuthenticated$ | async)?.isAuthenticated) {
+        <div class="flex items-center gap-6">
+          <!-- Menu Links -->
+          <div class="flex gap-4">
+            <a routerLink="/artists" routerLinkActive="text-orange-400 border-b-2 border-orange-400"
+               class="text-white hover:text-orange-300 transition-colors px-3 py-2 text-sm font-medium tracking-wide uppercase">
+              Artistas
+            </a>
+            <a routerLink="/albums" routerLinkActive="text-orange-400 border-b-2 border-orange-400"
+               class="text-white hover:text-orange-300 transition-colors px-3 py-2 text-sm font-medium tracking-wide uppercase">
+              Álbuns
+            </a>
+          </div>
+
+          <!-- User Info & Logout -->
+          <div class="flex items-center gap-4 border-l border-gray-600 pl-4">
+            <div class="text-right">
+              <p class="text-xs text-gray-400">Logado como</p>
+              <p class="text-sm font-semibold text-white">{{ username }}</p>
+              @if (isAdmin) {
+                <span
+                  class="inline-block mt-1 px-2 py-0.5 text-xs font-bold bg-orange-500/20 text-orange-400 rounded border border-orange-500/50">
+                            ADMIN
+                        </span>
+              }
+            </div>
+
+            <!-- Logout Button -->
+            <button (click)="logout()"
+                    class="px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 hover:text-red-300 border border-red-500/50 rounded transition-all duration-200 text-sm font-medium tracking-wide uppercase shadow-[0_0_10px_rgba(239,68,68,0.3)] hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]">
+              Sair
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </nav>
+</header>
