@@ -61,10 +61,14 @@ O projeto segue **Arquitetura em Camadas (Layered Architecture)**, com separaç�
   - `core`: Configurações globais, segurança (JWT), filtros e utilitários.
   - `modules`: Divide o domínio em funcionalidades (Artistas, Álbuns, Regionais).
     - `controllers`: Camada de entrada (REST).
-    - `services`: Regras de negócio.
-    - `repositories`: Acesso a dados (Pattern Repository com Panache).
+    - `services`: Regras de negócio (Service Layer).
+    - `repositories`: Acesso a dados (Repository Pattern com Panache).
     - `entities`: Modelo de dados.
-    - `mappers`: Conversão entre DTOs e Entidades (MapStruct).
+    - `mappers`: Conversão entre DTOs e Entidades (Mapper Pattern com MapStruct).
+    - `dto`: Objetos de transferência (DTO Pattern) separados em request/response.
+    - `proxy`: Cliente REST para API externa (Proxy Pattern).
+
+- **Design Patterns:** Repository, DTO, Mapper, Service Layer, Observer (WebSocket).
 
 - **Tecnologias:**
   - **Quarkus:** Framework Java supersônico e subatômico, escolhido pela performance e baixa latência.
