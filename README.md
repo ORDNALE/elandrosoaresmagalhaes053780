@@ -4,7 +4,7 @@ Aplicação fullstack para gerenciamento de artistas e álbuns.
 
 ```
 ├── backend/   → API REST com Quarkus (Java 21)
-├── frontend/  → Aplicação Angular 19
+├── frontend/  → Aplicação Angular 19 + Tailwind CSS
 └── docker-compose.yml
 ```
 
@@ -29,14 +29,21 @@ Aplicação fullstack para gerenciamento de artistas e álbuns.
 ### Pré-requisitos
 - Docker Engine 19.03+
 - Docker Compose V2
+- Node.js 22+ (para o frontend)
 
-### Rodar a Aplicação
+### Rodar o Backend
 ```bash
 docker compose up --build
 ```
 > ⏳ Na primeira execução o build pode demorar alguns minutos para baixar as dependências Maven e imagens Docker.
 
-### Rodar os Testes Unitários
+### Rodar o Frontend
+```bash
+cd frontend && npm install && npm start
+```
+Acesso: http://localhost:4200
+
+### Rodar os Testes Unitários (Backend)
 Os testes utilizam Testcontainers e precisam ser executados localmente:
 ```bash
 cd backend && ./mvnw test
@@ -49,6 +56,7 @@ Requisitos: Java 21 e Maven 3.9+
 
 | Serviço | URL / Host | Porta | Usuário | Senha |
 |---------|------------|-------|---------|-------|
+| **Frontend** | `http://localhost:4200` | 4200 | - | - |
 | **API** | `http://localhost:8090` | 8090 | - | - |
 | **Swagger UI** | [`/swagger-ui`](http://localhost:8090/swagger-ui) | 8090 | - | - |
 | **Liveness Probe** | [`/q/health/live`](http://localhost:8090/q/health/live) | 8090 | - | - |
@@ -76,12 +84,16 @@ O projeto segue **Arquitetura em Camadas (Layered Architecture)**, com separaç�
 
 - **Design Patterns:** Repository, DTO, Mapper, Service Layer, Observer (WebSocket).
 
-- **Tecnologias:**
+- **Tecnologias Backend:**
   - **Quarkus:** Framework Java supersônico e subatômico, escolhido pela performance e baixa latência.
   - **Hibernate Panache:** Simplifica a camada de persistência.
   - **Flyway:** Versionamento e migração do banco de dados.
   - **MinIO:** Armazenamento de objetos compatível com S3 (para capas de álbuns).
   - **SmallRye JWT:** Segurança stateless robusta.
+
+- **Tecnologias Frontend:**
+  - **Angular 19:** Framework SPA com componentes standalone.
+  - **Tailwind CSS 3:** Estilização utility-first.
 
 ### 📊 Estrutura de Dados
 O diagrama de classes e relacionamentos (incluindo N:N entre Artista e Álbum) pode ser visualizado aqui:
