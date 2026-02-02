@@ -1,6 +1,12 @@
-# API de Gerenciamento Musical
+# Sistema de Gerenciamento Musical
 
-API REST desenvolvida com **Quarkus** para gerenciamento de artistas e álbuns, implementando Clean Architecture e boas práticas de desenvolvimento.
+Aplicação fullstack para gerenciamento de artistas e álbuns.
+
+```
+├── backend/   → API REST com Quarkus (Java 21)
+├── frontend/  → Aplicação Angular 19
+└── docker-compose.yml
+```
 
 ---
 
@@ -33,7 +39,7 @@ docker compose up --build
 ### Rodar os Testes Unitários
 Os testes utilizam Testcontainers e precisam ser executados localmente:
 ```bash
-./mvnw test
+cd backend && ./mvnw test
 ```
 Requisitos: Java 21 e Maven 3.9+
 
