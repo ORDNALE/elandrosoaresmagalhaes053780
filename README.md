@@ -21,21 +21,21 @@ API REST desenvolvida com **Quarkus** para gerenciamento de artistas e álbuns, 
 ## 🚀 Como Executar
 
 ### Pré-requisitos
-- Java 21
-- Docker Engine 19.03+ (Compatível com Compose 3.9)
+- Docker Engine 19.03+
 - Docker Compose V2
-- Maven 3.9+
 
 ### Rodar a Aplicação
 ```bash
-./mvnw clean package
 docker compose up --build
 ```
+> ⏳ Na primeira execução o build pode demorar alguns minutos para baixar as dependências Maven e imagens Docker.
 
-### Rodar os Testes
+### Rodar os Testes Unitários
+Os testes utilizam Testcontainers e precisam ser executados localmente:
 ```bash
 ./mvnw test
 ```
+Requisitos: Java 21 e Maven 3.9+
 
 ---
 
@@ -55,7 +55,7 @@ docker compose up --build
 
 ## 🏗️ Arquitetura e Decisões Técnicas
 
-O projeto segue os princípios da **Clean Architecture**, visando desacoplamento e testabilidade.
+O projeto segue **Arquitetura em Camadas (Layered Architecture)**, com separação clara de responsabilidades.
 
 - **Camadas:**
   - `core`: Configurações globais, segurança (JWT), filtros e utilitários.
