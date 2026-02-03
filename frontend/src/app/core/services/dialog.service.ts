@@ -1,5 +1,12 @@
 import { Injectable, signal } from '@angular/core';
-import { ConfirmationDialogData } from '../../shared/components/confirmation-dialog/confirmation-dialog.component';
+
+export interface ConfirmationDialogData {
+    title: string;
+    message: string;
+    confirmText?: string;
+    cancelText?: string;
+    type?: 'danger' | 'warning' | 'info';
+}
 
 @Injectable({
     providedIn: 'root'

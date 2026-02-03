@@ -2,13 +2,7 @@ import { Component, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DialogService } from '@core/services/dialog.service';
 
-export interface ConfirmationDialogData {
-  title: string;
-  message: string;
-  confirmText?: string;
-  cancelText?: string;
-  type?: 'danger' | 'warning' | 'info';
-}
+
 
 @Component({
   selector: 'app-confirmation-dialog',
