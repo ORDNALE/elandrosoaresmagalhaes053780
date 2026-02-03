@@ -61,7 +61,7 @@ cd backend && ./mvnw test
 
 | Serviço | URL / Host | Porta | Usuário | Senha |
 |---------|------------|-------|---------|-------|
-| **Frontend** | `http://localhost` | 80 | - | - |
+| **Frontend** | `http://localhost` | 80 | `appuser` | `app123` |
 | **API** | `http://localhost:8090` | 8090 | - | - |
 | **Swagger UI** | [`/swagger-ui`](http://localhost:8090/swagger-ui) | 8090 | - | - |
 | **Liveness Probe** | [`/q/health/live`](http://localhost:8090/q/health/live) | 8090 | - | - |
