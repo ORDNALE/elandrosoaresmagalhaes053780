@@ -57,6 +57,17 @@ services:
       QUARKUS_MINIO_SECRET_KEY: minioadmin
       MINIO_BUCKET_NAME: capa-albuns
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: elandro-frontend
+    network_mode: host
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_started
+
 volumes:
   pgdata:
   miniodata:

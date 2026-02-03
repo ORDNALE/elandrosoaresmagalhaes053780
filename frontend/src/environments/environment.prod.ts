@@ -1,6 +1,5 @@
-
 export const environment = {
   production: true,
   apiUrl: '/api',
-  wsUrl: 'wss://elandrosoares.com'
+  wsUrl: 'ws://localhost:8090/ws/albums'
 };

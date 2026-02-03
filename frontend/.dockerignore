@@ -1,0 +1,10 @@
+dist
+node_modules
+.git
+.github
+.vscode
+.angular
+.idea
+README.md
+Dockerfile
+**/*.spec.ts
