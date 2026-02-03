@@ -31,7 +31,7 @@ export class AlbumFacade {
   private readonly notification = inject(NotificationService);
   private readonly router = inject(Router);
   private readonly coverApi = inject(CoverApiService);
-  private readonly wsService = inject(WebSocketService); // Inject WS Service
+  private readonly wsService = inject(WebSocketService);
 
   // Expose state observables
   readonly albums$ = this.albumState.albumList$;
