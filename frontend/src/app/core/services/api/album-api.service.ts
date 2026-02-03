@@ -19,9 +19,9 @@ export class AlbumApiService {
 
     /**
      * GET /v1/albuns
-     * List albums with pagination and filters
-     * @param pageRequest - Pagination params (page, size)
-     * @param filter - Optional filters (nomeArtista, tipo, sort)
+     * Lista álbuns com paginação e filtros
+     * @param pageRequest - Parâmetros de paginação (page, size)
+     * @param filter - Filtros opcionais (nomeArtista, tipo, sort)
      */
     list(pageRequest: PageRequest, filter?: AlbumFilterRequest): Observable<Paged<AlbumResponse>> {
         let params = new HttpParams()
@@ -47,7 +47,7 @@ export class AlbumApiService {
 
     /**
      * GET /v1/albuns/{id}
-     * Get album by ID with artists and covers
+     * Obtém álbum por ID com artistas e capas
      */
     getById(id: number): Observable<AlbumResponse> {
         return this.http.get<AlbumResponse>(`${this.baseUrl}/${id}`);
@@ -55,7 +55,7 @@ export class AlbumApiService {
 
     /**
      * POST /v1/albuns
-     * Create new album (ADMIN only)
+     * Cria novo álbum (apenas ADMIN)
      */
     create(request: AlbumRequest): Observable<AlbumResponse> {
         return this.http.post<AlbumResponse>(this.baseUrl, request);
@@ -63,7 +63,7 @@ export class AlbumApiService {
 
     /**
      * PUT /v1/albuns/{id}
-     * Update album (ADMIN only)
+     * Atualiza álbum (apenas ADMIN)
      */
     update(id: number, request: AlbumRequest): Observable<void> {
         return this.http.put<void>(`${this.baseUrl}/${id}`, request);
@@ -71,7 +71,7 @@ export class AlbumApiService {
 
     /**
      * DELETE /v1/albuns/{id}
-     * Delete album (ADMIN only)
+     * Deleta álbum (apenas ADMIN)
      */
     delete(id: number): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/${id}`);

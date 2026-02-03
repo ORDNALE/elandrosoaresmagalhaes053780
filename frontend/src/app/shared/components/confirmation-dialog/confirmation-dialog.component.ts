@@ -29,7 +29,6 @@ import { DialogService } from '@core/services/dialog.service';
 export class ConfirmationDialogComponent {
   private readonly dialogService = inject(DialogService);
 
-  // Bind signals from service
   readonly isOpen = this.dialogService.isOpen;
   readonly data = this.dialogService.data;
 

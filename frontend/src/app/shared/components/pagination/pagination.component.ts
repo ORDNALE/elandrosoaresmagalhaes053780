@@ -31,11 +31,11 @@ export class PaginationComponent implements OnChanges {
     let startPage: number, endPage: number;
 
     if (total <= maxPagesToShow) {
-      // less than max pages so show all
+      // Menos que o máximo de páginas, mostra todas
       startPage = 0;
       endPage = total - 1;
     } else {
-      // more than max pages so calculate start and end pages
+      // Mais que o máximo de páginas, calcula início e fim
       const middle = Math.floor(maxPagesToShow / 2);
       if (current <= middle) {
         startPage = 0;
@@ -69,7 +69,6 @@ export class PaginationComponent implements OnChanges {
     return `${base} bg-gray-800/50 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white hover:border-gray-600`;
   }
 
-  // Helper for template to avoid prop drilling Math
   get Math() {
     return Math;
   }

@@ -19,9 +19,9 @@ export class ArtistApiService {
 
     /**
      * GET /v1/artistas
-     * List artists with pagination and filters
-     * @param pageRequest - Pagination params (page, size)
-     * @param filter - Optional filters (nome, tipo, sort)
+     * Lista artistas com paginação e filtros
+     * @param pageRequest - Parâmetros de paginação (page, size)
+     * @param filter - Filtros opcionais (nome, tipo, sort)
      */
     list(pageRequest: PageRequest, filter?: ArtistaFilterRequest): Observable<Paged<ArtistaResponse>> {
         let params = new HttpParams()
@@ -43,7 +43,7 @@ export class ArtistApiService {
 
     /**
      * GET /v1/artistas/{id}
-     * Get artist by ID with albums
+     * Obtém artista por ID com álbuns
      */
     getById(id: number): Observable<ArtistaResponse> {
         return this.http.get<ArtistaResponse>(`${this.baseUrl}/${id}`);
@@ -51,7 +51,7 @@ export class ArtistApiService {
 
     /**
      * POST /v1/artistas
-     * Create new artist (ADMIN only)
+     * Cria novo artista (apenas ADMIN)
      */
     create(request: ArtistaRequest): Observable<ArtistaResponse> {
         return this.http.post<ArtistaResponse>(this.baseUrl, request);
@@ -59,7 +59,7 @@ export class ArtistApiService {
 
     /**
      * PUT /v1/artistas/{id}
-     * Update artist (ADMIN only)
+     * Atualiza artista (apenas ADMIN)
      */
     update(id: number, request: ArtistaRequest): Observable<void> {
         return this.http.put<void>(`${this.baseUrl}/${id}`, request);
@@ -67,7 +67,7 @@ export class ArtistApiService {
 
     /**
      * DELETE /v1/artistas/{id}
-     * Delete artist (ADMIN only)
+     * Deleta artista (apenas ADMIN)
      */
     delete(id: number): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/${id}`);

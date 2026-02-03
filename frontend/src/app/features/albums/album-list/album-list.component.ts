@@ -21,7 +21,6 @@ export class AlbumListComponent implements OnInit, OnDestroy {
   private readonly wsService = inject(WebSocketService);
   private readonly destroy$ = new Subject<void>();
 
-  // State observables
   readonly albums$ = this.albumFacade.albums$;
   readonly loading$ = this.albumFacade.loading$;
   readonly error$ = this.albumFacade.error$;
@@ -29,16 +28,13 @@ export class AlbumListComponent implements OnInit, OnDestroy {
   readonly pageCount$ = this.albumFacade.pageCount$;
   readonly total$ = this.albumFacade.total$;
 
-  // Pagination and filter state
   pageSize = signal(12);
   sortField = signal<'titulo'>('titulo');
   sortDirection = signal<'asc' | 'desc'>('asc');
 
-  // WebSocket notification
   newAlbumNotification = signal<AlbumCreatedEvent | null>(null);
   showNotification = signal(false);
 
-  // Filter form
   filterForm = new FormGroup({
     titulo: new FormControl(''),
     nomeArtista: new FormControl('')
@@ -68,7 +64,7 @@ export class AlbumListComponent implements OnInit, OnDestroy {
   }
 
   private setupWebSocket(): void {
-    // Listen for album creation events
+    // Escuta eventos de criação de álbum
     this.wsService.onAlbumCreated()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -77,12 +73,12 @@ export class AlbumListComponent implements OnInit, OnDestroy {
           this.newAlbumNotification.set(event);
           this.showNotification.set(true);
 
-          // Auto-hide notification after 5 seconds
+          // Oculta notificação após 5 segundos
           setTimeout(() => {
             this.showNotification.set(false);
           }, 5000);
 
-          // Auto-refresh list
+          // Atualiza a lista automaticamente
           this.loadAlbums();
         },
         error: (error) => {
@@ -139,6 +135,5 @@ export class AlbumListComponent implements OnInit, OnDestroy {
     this.showNotification.set(false);
   }
 
-  // Expose Math for template
   readonly Math = Math;
 }

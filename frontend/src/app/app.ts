@@ -24,10 +24,10 @@ export class App implements OnInit, OnDestroy {
   protected readonly title = signal('elandro-music');
 
   ngOnInit(): void {
-    // Initialize auth state from stored tokens on app startup
+    // Inicializa o estado de autenticação a partir dos tokens armazenados
     this.authFacade.initializeAuth();
 
-    // Manage WebSocket connection based on authentication state
+    // Gerencia conexão WebSocket baseada no estado de autenticação
     this.authFacade.state$
       .pipe(
         map(state => state.isAuthenticated),
@@ -39,19 +39,18 @@ export class App implements OnInit, OnDestroy {
           this.wsService.connect();
         } else {
           try {
-            // Safe disconnect if not connected or already closed, handled by service
             this.wsService.disconnect();
           } catch (e) {
-            console.error('Error disconnecting websocket', e);
+            console.error('Erro ao desconectar websocket', e);
           }
         }
       });
 
-    // Global listener for new albums
+    // Listener global para novos álbuns
     this.wsService.onAlbumCreated()
       .pipe(takeUntil(this.destroy$))
       .subscribe(event => {
-        // WebSocket is the single source of truth for creation success
+        // WebSocket é a fonte da verdade para sucesso na criação
         const title = event.message || 'Novo álbum criado';
         const message = event.titulo || 'Álbum adicionado à biblioteca';
         this.toastService.success(title, message);

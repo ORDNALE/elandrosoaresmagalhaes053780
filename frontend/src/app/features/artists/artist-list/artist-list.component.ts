@@ -35,7 +35,6 @@ export class ArtistListComponent implements OnInit {
     }
   }
 
-  // State observables
   readonly artists$ = this.artistFacade.artists$;
   readonly loading$ = this.artistFacade.loading$;
   readonly error$ = this.artistFacade.error$;
@@ -43,18 +42,15 @@ export class ArtistListComponent implements OnInit {
   readonly pageCount$ = this.artistFacade.pageCount$;
   readonly total$ = this.artistFacade.total$;
 
-  // Pagination and filter state
   pageSize = signal(12);
   sortField = signal<'nome' | 'tipo'>('nome');
   sortDirection = signal<'asc' | 'desc'>('asc');
 
-  // Filter form
   filterForm = new FormGroup({
     nome: new FormControl(''),
     tipo: new FormControl<TipoArtista | ''>('')
   });
 
-  // Expose enum for template
   readonly TipoArtista = TipoArtista;
 
   ngOnInit(): void {
@@ -69,7 +65,7 @@ export class ArtistListComponent implements OnInit {
         distinctUntilChanged()
       )
       .subscribe(() => {
-        this.loadArtists(0); // Reset to first page on filter change
+        this.loadArtists(0); // Reinicia para a primeira página ao filtrar
       });
   }
 
@@ -109,6 +105,5 @@ export class ArtistListComponent implements OnInit {
     return this.authFacade.isAdmin();
   }
 
-  // Expose Math for template
   readonly Math = Math;
 }

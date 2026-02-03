@@ -2,9 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { ToastService } from '../../shared/services/toast.service';
 
 /**
- * Notification Service
- * Centralized service for user notifications, adhering to the Facade pattern requirements.
- * Wraps ToastService to provide a standardized interface for Facades.
+ * Serviço de Notificação
+ * Serviço centralizado para notificações do usuário, aderindo aos requisitos do padrão Facade.
+ * Envolve o ToastService para fornecer uma interface padronizada.
  */
 @Injectable({
     providedIn: 'root'

@@ -3,11 +3,11 @@ import { inject } from '@angular/core';
 import { TokenService } from '../services/token.service';
 
 /**
- * HTTP interceptor that adds JWT token to outgoing requests.
- * Skips adding token for auth endpoints.
+ * Interceptor HTTP que adiciona o token JWT às requisições de saída.
+ * Pula a adição do token para endpoints de autenticação.
  */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-    // Skip adding token for auth endpoints
+    // Pula a adição do token para endpoints de autenticação
     if (req.url.includes('/auth/')) {
         return next(req);
     }

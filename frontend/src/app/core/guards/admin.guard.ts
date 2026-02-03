@@ -3,8 +3,8 @@ import { Router, CanActivateFn } from '@angular/router';
 import { TokenService } from '../services/token.service';
 
 /**
- * Admin Guard - Protects routes that require ADMIN role
- * Checks if user is authenticated AND has ADMIN role
+ * Guard Administrativo - Protege rotas que requerem função de ADMIN
+ * Verifica se o usuário está autenticado E possui a role ADMIN
  */
 export const adminGuard: CanActivateFn = () => {
     const tokenService = inject(TokenService);

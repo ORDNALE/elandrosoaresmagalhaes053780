@@ -24,7 +24,7 @@ export class ToastService {
     const newToast: Toast = { ...toast, id };
     this.toasts.update(toasts => [...toasts, newToast]);
 
-    // Auto-dismiss after duration
+    // Fecha automaticamente após a duração
     if (duration > 0) {
       setTimeout(() => this.dismiss(id), duration);
     }

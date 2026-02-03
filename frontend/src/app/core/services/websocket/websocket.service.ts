@@ -43,7 +43,7 @@ export class WebSocketService {
                     count: this.maxReconnectAttempts, // Substitui a lógica manual de max attempts
                     delay: (error, retryCount) => {
                         this.reconnectAttempts = retryCount; // Sincroniza com sua variável se precisar
-                        console.log(`WebSocket reconnect attempt ${retryCount}/${this.maxReconnectAttempts}`);
+                        console.log(`Tentativa de reconexão do WebSocket ${retryCount}/${this.maxReconnectAttempts}`);
 
                         // Retorna o timer de delay
                         return timer(this.reconnectInterval);
@@ -51,7 +51,7 @@ export class WebSocketService {
                     resetOnSuccess: true // Reseta o contador automaticamente se conectar com sucesso!
                 }),
                 catchError((error) => {
-                    console.error('Max reconnection attempts reached or fatal error:', error);
+                    console.error('Número máximo de tentativas de reconexão atingido ou erro fatal:', error);
                     return EMPTY;
                 })
             );
@@ -70,13 +70,13 @@ export class WebSocketService {
             url: wsUrl,
             openObserver: {
                 next: () => {
-                    console.log('WebSocket connected');
+                    console.log('WebSocket conectado');
                     this.reconnectAttempts = 0;
                 }
             },
             closeObserver: {
                 next: () => {
-                    console.log('WebSocket disconnected');
+                    console.log('WebSocket desconectado');
                 }
             }
         });
@@ -86,7 +86,7 @@ export class WebSocketService {
         if (this.socket$) {
             this.socket$.next(message);
         } else {
-            console.error('WebSocket is not connected');
+            console.error('WebSocket não está conectado');
         }
     }
 
@@ -101,7 +101,7 @@ export class WebSocketService {
         return !!this.socket$ && !this.socket$.closed;
     }
 
-    // Specific method for album creation events
+    // Método específico para eventos de criação de álbum
     onAlbumCreated(): Observable<AlbumCreatedEvent> {
         return this.messages$ as Observable<AlbumCreatedEvent>;
     }

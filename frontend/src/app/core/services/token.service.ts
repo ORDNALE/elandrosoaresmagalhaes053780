@@ -10,38 +10,37 @@ export class TokenService {
     private readonly REMEMBERED_EMAIL_KEY = 'remembered_email';
 
     /**
-     * Store tokens in storage
-     * @param persist If true, use localStorage (Remember Me). If false, use sessionStorage.
+     * Armazena os tokens no armazenamento (local ou session)
+     * @param persist Se verdadeiro, usa localStorage (Lembrar de mim). Se falso, usa sessionStorage.
      */
     setTokens(accessToken: string, refreshToken: string, persist: boolean): void {
         const storage = persist ? localStorage : sessionStorage;
         const otherStorage = persist ? sessionStorage : localStorage;
 
-        // Save to target storage
         storage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
         storage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
 
-        // Clear other storage to avoid conflicts
+        // Limpa o outro armazenamento para evitar conflitos
         otherStorage.removeItem(this.ACCESS_TOKEN_KEY);
         otherStorage.removeItem(this.REFRESH_TOKEN_KEY);
     }
 
     /**
-     * Get access token from either storage
+     * Obtém o token de acesso de qualquer armazenamento
      */
     getAccessToken(): string | null {
         return localStorage.getItem(this.ACCESS_TOKEN_KEY) || sessionStorage.getItem(this.ACCESS_TOKEN_KEY);
     }
 
     /**
-     * Get refresh token from either storage
+     * Obtém o token de atualização de qualquer armazenamento
      */
     getRefreshToken(): string | null {
         return localStorage.getItem(this.REFRESH_TOKEN_KEY) || sessionStorage.getItem(this.REFRESH_TOKEN_KEY);
     }
 
     /**
-     * Clear all tokens (logout)
+     * Limpa todos os tokens (logout)
      */
     clearTokens(): void {
         localStorage.removeItem(this.ACCESS_TOKEN_KEY);
@@ -51,34 +50,33 @@ export class TokenService {
     }
 
     /**
-     * Save email for Remember Me functionality
+     * Salva o email para a funcionalidade "Lembrar de mim"
      */
     setRememberedEmail(email: string): void {
         localStorage.setItem(this.REMEMBERED_EMAIL_KEY, email);
     }
 
     /**
-     * Get remembered email
+     * Obtém o email lembrado
      */
     getRememberedEmail(): string | null {
         return localStorage.getItem(this.REMEMBERED_EMAIL_KEY);
     }
 
     /**
-     * Clear remembered email
+     * Limpa o email lembrado
      */
     clearRememberedEmail(): void {
         localStorage.removeItem(this.REMEMBERED_EMAIL_KEY);
     }
 
     /**
-     * Check if user is authenticated (has valid access token)
+     * Verifica se o usuário está autenticado (possui token válido)
      */
     isAuthenticated(): boolean {
         const token = this.getAccessToken();
         if (!token) return false;
 
-        // Check if token is expired
         const decoded = this.decodeToken(token);
         if (!decoded) return false;
 
@@ -87,7 +85,7 @@ export class TokenService {
     }
 
     /**
-     * Decode JWT token
+     * Decodifica o token JWT
      */
     decodeToken(token: string): DecodedToken | null {
         try {
@@ -95,13 +93,13 @@ export class TokenService {
             const decoded = JSON.parse(atob(payload));
             return decoded as DecodedToken;
         } catch (error) {
-            console.error('Error decoding token:', error);
+            console.error('Erro ao decodificar token:', error);
             return null;
         }
     }
 
     /**
-     * Get user roles from token
+     * Obtém as roles do usuário a partir do token
      */
     getUserRoles(): string[] {
         const token = this.getAccessToken();
@@ -112,21 +110,21 @@ export class TokenService {
     }
 
     /**
-     * Check if user has specific role
+     * Verifica se o usuário possui uma role específica
      */
     hasRole(role: string): boolean {
         return this.getUserRoles().includes(role);
     }
 
     /**
-     * Check if user is admin
+     * Verifica se o usuário é admin
      */
     isAdmin(): boolean {
         return this.hasRole('ADMIN');
     }
 
     /**
-     * Get username from token
+     * Obtém o nome de usuário (sub) do token
      */
     getUsername(): string | null {
         const token = this.getAccessToken();
@@ -137,7 +135,7 @@ export class TokenService {
     }
 
     /**
-     * Check if token will expire soon (within specific minutes)
+     * Verifica se o token expirará em breve (dentro dos minutos especificados)
      */
     willExpireSoon(thresholdMinutes: number = 2): boolean {
         const token = this.getAccessToken();
@@ -149,7 +147,6 @@ export class TokenService {
         const now = Math.floor(Date.now() / 1000);
         const thresholdSeconds = thresholdMinutes * 60;
 
-        // Return true if remaining time is less than threshold
         return (decoded.exp - now) < thresholdSeconds;
     }
 }
