@@ -6,7 +6,7 @@ import { ToastService } from './shared/services/toast.service';
 import { Subject } from 'rxjs';
 import { takeUntil, map, distinctUntilChanged } from 'rxjs/operators';
 import { HeaderComponent } from './shared/components/header/header.component';
-import { ToastContainerComponent } from './shared/components/toast-container/toast-container.component';
+import { ToastContainerComponent } from './shared/components';
 import { ConfirmationDialogComponent } from './shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({

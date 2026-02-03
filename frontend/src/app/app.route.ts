@@ -14,12 +14,12 @@ export const routes: Routes = [
   {
     path: 'artists',
     canActivate: [authGuard],
-    loadChildren: () => import('./features/artists/artists.routes').then(m => m.ARTISTS_ROUTES)
+    loadChildren: () => import('./features/artists/artist.routes').then(m => m.ARTISTS_ROUTES)
   },
   {
     path: 'albums',
     canActivate: [authGuard],
-    loadChildren: () => import('./features/albums/albums.routes').then(m => m.ALBUMS_ROUTES)
+    loadChildren: () => import('./features/albums/albums.route').then(m => m.ALBUMS_ROUTES)
   },
   {
     path: '**',
