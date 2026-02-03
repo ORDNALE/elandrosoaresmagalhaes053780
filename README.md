@@ -27,21 +27,17 @@ Aplicação fullstack para gerenciamento de artistas e álbuns.
 ## 🚀 Como Executar
 
 ### Pré-requisitos
-- Docker Engine 19.03+
+- Docker Engine 19.03+ (ou [Docker Desktop](https://www.docker.com/products/docker-desktop/))
 - Docker Compose V2
-- Node.js 22+ (para o frontend)
 
-### Rodar o Backend
-```bash
-docker compose up --build
-```
-> ⏳ Na primeira execução o build pode demorar alguns minutos para baixar as dependências Maven e imagens Docker.
+### Rodar a Aplicação
+O projeto está totalmente containerizado. Para iniciar todo o ecossistema (Frontend, API, Banco de Dados, MinIO), utilize o Docker Compose:
 
-### Rodar o Frontend
 ```bash
-cd frontend && npm install && npm start
+docker-compose up -d --build
 ```
-Acesso: http://localhost:4200
+> ⏳ Na primeira execução, o build pode demorar alguns minutos para baixar as imagens e compilar o backend/frontend.
+
 
 ### Rodar os Testes Unitários (Backend)
 Os testes utilizam Testcontainers e precisam ser executados localmente:
@@ -56,7 +52,7 @@ Requisitos: Java 21 e Maven 3.9+
 
 | Serviço | URL / Host | Porta | Usuário | Senha |
 |---------|------------|-------|---------|-------|
-| **Frontend** | `http://localhost:4200` | 4200 | - | - |
+| **Frontend** | `http://localhost` | 80 | - | - |
 | **API** | `http://localhost:8090` | 8090 | - | - |
 | **Swagger UI** | [`/swagger-ui`](http://localhost:8090/swagger-ui) | 8090 | - | - |
 | **Liveness Probe** | [`/q/health/live`](http://localhost:8090/q/health/live) | 8090 | - | - |
@@ -84,16 +80,27 @@ O projeto segue **Arquitetura em Camadas (Layered Architecture)**, com separaç�
 
 - **Design Patterns:** Repository, DTO, Mapper, Service Layer, Observer (WebSocket).
 
-- **Tecnologias Backend:**
-  - **Quarkus:** Framework Java supersônico e subatômico, escolhido pela performance e baixa latência.
-  - **Hibernate Panache:** Simplifica a camada de persistência.
-  - **Flyway:** Versionamento e migração do banco de dados.
-  - **MinIO:** Armazenamento de objetos compatível com S3 (para capas de álbuns).
-  - **SmallRye JWT:** Segurança stateless robusta.
+### 🛠️ Tecnologias Utilizadas
 
-- **Tecnologias Frontend:**
-  - **Angular 19:** Framework SPA com componentes standalone.
-  - **Tailwind CSS 3:** Estilização utility-first.
+#### Backend (Java 21 + Quarkus 3.30)
+- **Core Framework:** Quarkus (Supersonic Subatomic Java)
+- **Persistência:** Hibernate ORM com Panache
+- **Banco de Dados:** PostgreSQL 16
+- **Migraton:** Flyway
+- **Armazenamento:** MinIO (S3 Compatible)
+- **Segurança:** SmallRye JWT (RBAC)
+- **Comunicação Real-time:** Quarkus WebSockets Next
+- **Job Scheduling:** Quarkus Scheduler
+- **Mapeamento:** MapStruct
+- **Redução de Boilerplate:** Lombok
+- **Testes:** JUnit 5, Mockito, REST Assured, Testcontainers
+
+#### Frontend (Angular 19)
+- **Framework:** Angular 19 (Standalone Components)
+- **Estilização:** Tailwind CSS 3
+- **Gerenciamento de Estado:** Signals
+- **Padrões:** Facade Pattern, Interceptors, Guards
+- **Estilo:** Design moderno com gradientes e glassmorphism
 
 ### 📊 Estrutura de Dados
 O diagrama de classes e relacionamentos (incluindo N:N entre Artista e Álbum) pode ser visualizado aqui:
