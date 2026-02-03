@@ -10,28 +10,37 @@ backend/.flattened-pom.xml
 frontend/node_modules/
 frontend/dist/
 frontend/.angular/
+frontend/out-tsc/
+frontend/bazel-out/
+frontend/coverage/
+frontend/testem.log
+frontend/.sass-cache/
+frontend/connect.lock
 
-# Eclipse
+# IDEs and Editors
 .project
 .classpath
 .settings/
 bin/
-
-# IntelliJ
-.idea
+.idea/
 *.ipr
 *.iml
 *.iws
-
-# NetBeans
-nb-configuration.xml
-
-# Visual Studio Code
-.vscode
+.vscode/
 .factorypath
+.c9/
+*.launch
+*.sublime-workspace
+
+# Logs
+npm-debug.log
+yarn-error.log
 
 # OSX
 .DS_Store
+
+# Windows
+Thumbs.db
 
 # Vim
 *.swp
