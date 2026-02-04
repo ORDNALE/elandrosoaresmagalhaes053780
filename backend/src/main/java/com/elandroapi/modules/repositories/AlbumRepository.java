@@ -7,6 +7,7 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,11 +32,6 @@ public class AlbumRepository implements PanacheRepository<Album> {
             params.put("nomeArtista", "%" + filter.getNomeArtista() + "%");
         }
 
-        if (filter.hasTituloAlbum()) {
-            conditions.add("LOWER(alb.titulo) LIKE LOWER(:tituloAlbum)");
-            params.put("tituloAlbum", "%" + filter.getTituloAlbum() + "%");
-        }
-
         if (filter.hasTipos()) {
             conditions.add("art.tipo IN :tipos");
             params.put("tipos", filter.getTipos());
@@ -49,8 +45,15 @@ public class AlbumRepository implements PanacheRepository<Album> {
                 ? Sort.Direction.Descending
                 : Sort.Direction.Ascending;
 
-        query.append(" ORDER BY alb.titulo ").append(direction == Sort.Direction.Descending ? "DESC" : "ASC");
+        if (needsJoin) {
+            query.append(" ORDER BY art.nome ").append(direction == Sort.Direction.Descending ? "DESC" : "ASC");
+            return find(query.toString(), params);
+        }
 
-        return find(query.toString(), params);
+        return find(query.toString(), Sort.by("titulo").direction(direction), params);
+    }
+
+    public long contarNovidadesSemana(LocalDateTime dataInicio) {
+        return count("dataCadastro >= ?1", dataInicio);
     }
 }

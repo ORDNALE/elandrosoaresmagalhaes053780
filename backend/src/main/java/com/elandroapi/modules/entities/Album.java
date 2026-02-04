@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,9 @@ public class Album {
     @Column(name = "titulo")
     private String titulo;
 
+    @Column(name = "data_cadastro")
+    private LocalDateTime dataCadastro;
+
     @ManyToMany
     @JoinTable(
             name = "artista_album",
@@ -38,4 +42,11 @@ public class Album {
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CapaAlbum> capas;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.dataCadastro == null) {
+            this.dataCadastro = LocalDateTime.now();
+        }
+    }
 }
