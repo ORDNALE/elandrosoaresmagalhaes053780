@@ -74,37 +74,58 @@ CREATE INDEX idx_regional_id_externo ON regional(id_externo);
 CREATE INDEX idx_regional_ativo ON regional(ativo);
 
 -- =========================
--- CARGA INICIAL (Exemplos N:N)
+-- CARGA INICIAL (Exemplos do edital)
 -- =========================
 
--- Artistas
+-- Artistas (SOLO e BANDA)
 INSERT INTO artista (id, nome, tipo) VALUES
-    (nextval('artista_id_seq'), 'Queen', 'BANDA'),
-    (nextval('artista_id_seq'), 'David Bowie', 'SOLO'),
-    (nextval('artista_id_seq'), 'Freddie Mercury', 'SOLO');
+    (nextval('artista_id_seq'), 'Serj Tankian', 'SOLO'),
+    (nextval('artista_id_seq'), 'Mike Shinoda', 'SOLO'),
+    (nextval('artista_id_seq'), 'Michel Teló', 'SOLO'),
+    (nextval('artista_id_seq'), 'Guns N'' Roses', 'BANDA');
 
--- Álbuns
+-- Álbuns - Serj Tankian
 INSERT INTO album (id, titulo) VALUES
-    (nextval('album_id_seq'), 'A Kind of Magic'),
-    (nextval('album_id_seq'), 'Under Pressure (Single)'),
-    (nextval('album_id_seq'), 'Mr. Bad Guy');
+    (nextval('album_id_seq'), 'Harakiri'),
+    (nextval('album_id_seq'), 'Black Blooms'),
+    (nextval('album_id_seq'), 'The Rough Dog');
 
--- Relacionamentos N:N (exemplos de colaboração)
--- "A Kind of Magic" - apenas Queen
+-- Álbuns - Mike Shinoda
+INSERT INTO album (id, titulo) VALUES
+    (nextval('album_id_seq'), 'The Rising Tied'),
+    (nextval('album_id_seq'), 'Post Traumatic'),
+    (nextval('album_id_seq'), 'Post Traumatic EP'),
+    (nextval('album_id_seq'), 'Where''d You Go');
+
+-- Álbuns - Michel Teló
+INSERT INTO album (id, titulo) VALUES
+    (nextval('album_id_seq'), 'Bem Sertanejo'),
+    (nextval('album_id_seq'), 'Bem Sertanejo - O Show (Ao Vivo)'),
+    (nextval('album_id_seq'), 'Bem Sertanejo - (1ª Temporada) - EP');
+
+-- Álbuns - Guns N' Roses
+INSERT INTO album (id, titulo) VALUES
+    (nextval('album_id_seq'), 'Use Your Illusion I'),
+    (nextval('album_id_seq'), 'Use Your Illusion II'),
+    (nextval('album_id_seq'), 'Greatest Hits');
+
+-- Relacionamentos N:N
+-- Serj Tankian
 INSERT INTO artista_album (artista_id, album_id)
 SELECT a.id, al.id FROM artista a, album al
-WHERE a.nome = 'Queen' AND al.titulo = 'A Kind of Magic';
+WHERE a.nome = 'Serj Tankian' AND al.titulo IN ('Harakiri', 'Black Blooms', 'The Rough Dog');
 
--- "Under Pressure" - Queen + David Bowie (colaboração clássica)
+-- Mike Shinoda
 INSERT INTO artista_album (artista_id, album_id)
 SELECT a.id, al.id FROM artista a, album al
-WHERE a.nome = 'Queen' AND al.titulo = 'Under Pressure (Single)';
+WHERE a.nome = 'Mike Shinoda' AND al.titulo IN ('The Rising Tied', 'Post Traumatic', 'Post Traumatic EP', 'Where''d You Go');
 
+-- Michel Teló
 INSERT INTO artista_album (artista_id, album_id)
 SELECT a.id, al.id FROM artista a, album al
-WHERE a.nome = 'David Bowie' AND al.titulo = 'Under Pressure (Single)';
+WHERE a.nome = 'Michel Teló' AND al.titulo IN ('Bem Sertanejo', 'Bem Sertanejo - O Show (Ao Vivo)', 'Bem Sertanejo - (1ª Temporada) - EP');
 
--- "Mr. Bad Guy" - Freddie Mercury solo
+-- Guns N' Roses
 INSERT INTO artista_album (artista_id, album_id)
 SELECT a.id, al.id FROM artista a, album al
-WHERE a.nome = 'Freddie Mercury' AND al.titulo = 'Mr. Bad Guy';
+WHERE a.nome = 'Guns N'' Roses' AND al.titulo IN ('Use Your Illusion I', 'Use Your Illusion II', 'Greatest Hits');
