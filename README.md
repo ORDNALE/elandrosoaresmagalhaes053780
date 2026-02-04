@@ -34,15 +34,30 @@ Este sistema é uma solução fullstack desenvolvida para o gerenciamento robust
 ### Pré-requisitos
 - Docker Engine 19.03+ (ou [Docker Desktop](https://www.docker.com/products/docker-desktop/))
 - Docker Compose V2
+- Portas **4201**, **8090**, **5444**, **19000** e **19001** livres no host
 
 ### Rodar a Aplicação
-O projeto está totalmente containerizado. Para iniciar todo o ecossistema (Frontend, API, Banco de Dados, MinIO), utilize o Docker Compose:
+O projeto está totalmente containerizado. Um único comando inicia todo o ecossistema (Frontend, API, Banco de Dados e MinIO):
 
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
-> ⏳ Na primeira execução, o build pode demorar alguns minutos para baixar as imagens e compilar o backend/frontend.
 
+> Na primeira execução, o build pode demorar alguns minutos para baixar as imagens base e compilar o backend/frontend.
+
+Após a conclusão, acesse o frontend em **http://localhost:4201**.
+
+### Parar a Aplicação
+
+```bash
+docker compose down
+```
+
+Para remover também os volumes (banco de dados e arquivos do MinIO):
+
+```bash
+docker compose down -v
+```
 
 ### 🧪 Como Testar
 
@@ -57,11 +72,13 @@ cd backend && ./mvnw test
 
 ---
 
-## 🌐 Acessos e Credenciais
+## 🌐 Acessos, Portas e Credenciais
+
+Todas as portas foram configuradas em valores não-padrão para evitar conflitos com serviços já em execução na máquina do avaliador.
 
 | Serviço | URL / Host | Porta | Usuário | Senha |
 |---------|------------|-------|---------|-------|
-| **Frontend** | `http://localhost` | 80 | `appuser` | `app123` |
+| **Frontend** | `http://localhost:4201` | 4201 | `appuser` | `app123` |
 | **API** | `http://localhost:8090` | 8090 | - | - |
 | **Swagger UI** | [`/swagger-ui`](http://localhost:8090/swagger-ui) | 8090 | - | - |
 | **Liveness Probe** | [`/q/health/live`](http://localhost:8090/q/health/live) | 8090 | - | - |
@@ -110,52 +127,109 @@ O diagrama de classes e relacionamentos pode ser visualizado aqui:
 
 ---
 
-### ✨ Funcionais Principais
+### ✨ Funcionalidades da API
 
-### 🔐 Autenticação
-- **Login:** `POST /v1/auth/login` (Retorna Access + Refresh Token).
-- **Renovação:** `POST /v1/auth/refresh`.
+### 📌 Versionamento
+Todos os endpoints utilizam o prefixo `/v1/`, permitindo evolução futura sem quebra de contrato.
+
+### 🔐 Autenticação (JWT)
+- **Login:** `POST /v1/auth/login` — retorna Access Token + Refresh Token.
+- **Renovação:** `POST /v1/auth/refresh` — gera novo Access Token a partir do Refresh Token.
+- **Expiração do Access Token:** 5 minutos.
+- **Expiração do Refresh Token:** 30 minutos.
 - **Uso:** Header `Authorization: Bearer <token>`.
 
-### 🔔 Notificações (WebSocket)
-Monitoramento em tempo real de novos álbuns.
+### 📄 Endpoints REST (POST, PUT, GET, DELETE)
+
+| Recurso | POST | GET (lista) | GET (detalhe) | PUT | DELETE |
+|---------|------|-------------|---------------|-----|--------|
+| `/v1/artistas` | Criar artista | Listar com filtros | Por ID | Atualizar | Remover |
+| `/v1/albuns` | Criar álbum | Listar com filtros | Por ID | Atualizar | Remover |
+| `/v1/albuns/{id}/capas` | Upload de capas | Listar capas | Capa por ID | - | Remover |
+| `/v1/regionais` | Sync manual (`/sync`) | Listar com filtros | - | - | - |
+
+### 🔍 Paginação e Filtros
+
+Consultas paginadas com os seguintes parâmetros:
+
+| Parâmetro | Tipo | Default | Descrição |
+|-----------|------|---------|-----------|
+| `page` | int | 0 | Número da página (base 0) |
+| `size` | int | 10 | Itens por página |
+| `sort` | string | asc | Ordenação alfabética (`asc` ou `desc`) |
+| `nome` | string | - | Busca parcial por nome do artista (case-insensitive) |
+| `tipo` | enum | - | Filtra por tipo: `SOLO` (cantores) ou `BANDA` |
+| `tituloAlbum` | string | - | Busca parcial por título do álbum |
+
+Formato de resposta paginada:
+```json
+{
+  "page": 0,
+  "size": 10,
+  "total": 42,
+  "pageCount": 5,
+  "content": [...]
+}
+```
+
+### 🖼️ Upload de Capas e Links Pré-assinados
+- Upload de uma ou mais imagens por requisição via `multipart/form-data` em `POST /v1/albuns/{id}/capas`.
+- Imagens armazenadas no **MinIO** (bucket `capa-albuns`), com apenas metadados persistidos no banco (hash, bucket, content-type, tamanho).
+- Recuperação via **links pré-assinados (presigned URLs)** com expiração de **30 minutos**.
+
+### 📖 Documentação OpenAPI/Swagger
+Endpoints documentados com anotações OpenAPI. Swagger UI disponível em [`/swagger-ui`](http://localhost:8090/swagger-ui).
+
+### 🔔 Notificações em Tempo Real (WebSocket)
+Monitoramento em tempo real de novos álbuns cadastrados.
 - **Endpoint:** `ws://localhost:8090/ws/albums`
-- **Uso:** Clientes conectados recebem payload JSON a cada novo cadastro.
+- **Uso:** Clientes conectados recebem payload JSON a cada novo álbum criado.
 
 ### 🔄 Sincronização de Regionais
-Importação e versionamento de dados da API externa.
-- **Automática:** Agendada para 06:00.
+Importação e versionamento de dados da API externa (`https://integrador-argus-api.geia.vip/v1/regionais`).
+- **Automática:** Agendada diariamente às 06:00.
 - **Manual:** `POST /v1/regionais/sync` (Admin).
 
+Regras de sincronização:
+
+| Cenário | Ação |
+|---------|------|
+| Regional presente na API externa mas ausente na base interna | **Inserir** novo registro com `ativo=true` |
+| Regional presente na base interna mas ausente na API externa | **Inativar** (`ativo=false`) |
+| Regional presente em ambos mas com nome alterado | **Inativar** o registro antigo e **inserir** novo com `ativo=true` |
+
 ### 🛡️ Proteção da API
-- **Rate Limit:** 10 req/min por cliente.
-- **CORS:** Restrito a origens confiáveis.
+- **Rate Limit:** 10 requisições por minuto por cliente, implementado com **Bucket4j**. Identificação por token JWT ou IP. Retorna HTTP 429 com headers `X-Rate-Limit-*`.
+- **CORS:** Restrito a origens confiáveis (`localhost:4201`, `localhost:4200`, `localhost`). Métodos permitidos: GET, POST, PUT, DELETE, PATCH, OPTIONS.
 
 ## ✅ Requisitos Atendidos
 
-### 🧩 Funcionais
-- [x] **API RESTful:** CRUD completo de Artistas e Álbuns com paginação, ordenação e filtros dinâmicos.
-- [x] **Relacionamento N:N:** Gerenciamento correto entre Artistas e Álbuns, permitindo colaborações e múltiplos vínculos.
-- [x] **Frontend – Telas Obrigatórias:**
-  - **Inicial:** Listagem em cards responsivos, busca textual e ordenação.
-  - **Detalhes:** Visualização completa do artista e seus álbuns relacionados.
-  - **Cadastro/Edição:** Formulários reativos com validação e associação N:N.
-  - **Autenticação:** Login obrigatório com JWT e renovação automática via Interceptor.
-- [x] **Upload de Arquivos:** Armazenamento de capas de álbuns no MinIO, com persistência apenas de metadados no banco relacional.
-- [x] **Notificações em Tempo Real:** Comunicação via WebSocket para aviso imediato de novos álbuns cadastrados.
-- [x] **Integração Externa:** Sincronização de dados de Regionais via API externa, com versionamento, atualização incremental e inativação lógica.
+### Requisitos Gerais
+- [x] **a) Segurança (CORS):** Acesso restrito a origens confiáveis (`localhost:4201`, `localhost:4200`, `localhost`).
+- [x] **b) Autenticação JWT:** Access Token com expiração de 5 minutos e Refresh Token com expiração de 30 minutos.
+- [x] **c) POST, PUT, GET:** Implementados para Artistas, Álbuns e Capas de Álbum (DELETE também incluso).
+- [x] **d) Paginação:** Consulta de álbuns paginada com parâmetros `page` e `size`.
+- [x] **e) Consultas parametrizadas:** Filtro por tipo de artista (`SOLO` para cantores, `BANDA` para bandas), com suporte a múltiplos tipos simultâneos.
+- [x] **f) Consulta por nome com ordenação:** Busca parcial por nome do artista (case-insensitive) com ordenação alfabética (`asc`/`desc`).
+- [x] **g) Upload de capas:** Upload de uma ou mais imagens por requisição via multipart.
+- [x] **h) Armazenamento no MinIO:** Imagens armazenadas no MinIO (S3), com metadados no banco relacional.
+- [x] **i) Links pré-assinados:** Recuperação de capas via presigned URLs com expiração de 30 minutos.
+- [x] **j) Versionamento de endpoints:** Todos os endpoints sob o prefixo `/v1/`.
+- [x] **k) Flyway Migrations:** Criação de tabelas e carga inicial automatizadas via migration SQL.
+- [x] **l) OpenAPI/Swagger:** Documentação interativa em `/swagger-ui` com anotações em todos os endpoints.
+- [x] **Relacionamento N:N:** Artista-Álbum via tabela associativa `artista_album`, com suporte a colaborações.
 
----
+### Requisitos Sênior
+- [x] **a) Health Checks:** Liveness (`/q/health/live`) e Readiness (`/q/health/ready`) via SmallRye Health.
+- [x] **b) Testes unitários:** JUnit 5 + Mockito para serviços e autenticação; Testcontainers para PostgreSQL e MinIO.
+- [x] **c) WebSocket:** Notificação em tempo real a cada novo álbum cadastrado via `ws://localhost:8090/ws/albums`.
+- [x] **d) Rate Limit:** 10 requisições por minuto por cliente (Bucket4j), identificação por JWT ou IP.
+- [x] **e) Regionais:** Importação da API externa com atributo `ativo`; sincronização com regras: novo insere, ausente inativa, alterado inativa antigo e cria novo.
 
-### 🏗️ Não Funcionais (Arquitetura & Qualidade)
-- [x] **Arquitetura Backend:** Camadas bem definidas (Controller, Service, Repository, DTO e Mapper).
-- [x] **Padrões de Projeto:** Repository, DTO, Mapper, Service Layer, Facade (Frontend) e Observer (WebSocket).
-- [x] **Arquitetura Frontend:**
-  - Facade Pattern para desacoplamento entre componentes e regras de negócio.
-  - Gerenciamento de estado baseado em **Angular Signals**, garantindo reatividade previsível.
-  - Lazy Loading por funcionalidade e TypeScript em modo estrito.
-- [x] **Segurança:** Autenticação JWT com controle de roles, refresh token e CORS restritivo.
-- [x] **Containerização:** Docker Compose orquestrando Frontend, Backend, PostgreSQL e MinIO.
-- [x] **Resiliência:** Health Checks (Liveness/Readiness), Rate Limiting e Graceful Shutdown.
-- [x] **Persistência:** Banco PostgreSQL com versionamento controlado via Flyway.
-- [x] **Testabilidade:** Testes unitários e de integração utilizando JUnit 5, REST Assured e Testcontainers.
+### Instruções Atendidas
+- [x] **Repositório GitHub** com histórico de commits.
+- [x] **README.md** com documentação, dados de inscrição, vaga e instruções de execução/teste.
+- [x] **Relacionamento N:N** entre Artista e Álbum.
+- [x] **Carga inicial** com os exemplos do edital (Serj Tankian, Mike Shinoda, Michel Teló, Guns N' Roses).
+- [x] **Docker:** Aplicação empacotada como imagens Docker, orquestrada via `docker-compose` (API + Frontend + PostgreSQL + MinIO).
+
