@@ -1,7 +1,9 @@
-try {
-    process.env.CHROME_BIN = require('puppeteer').executablePath();
-} catch (e) {
-    console.warn('Puppeteer not found. Chrome must be available in the system.');
+if (!process.env.CHROME_BIN) {
+    try {
+        process.env.CHROME_BIN = require('puppeteer').executablePath();
+    } catch (e) {
+        console.warn('Puppeteer não encontrado. O Chrome deve estar disponível no sistema.');
+    }
 }
 
 module.exports = function (config) {

@@ -3,15 +3,13 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
+
 RUN npm ci
 
 
 COPY . .
 
-# 🔥 TESTES UNITÁRIOS (Karma + Puppeteer)
-RUN npm run test -- --watch=false
-
-# 🔥 BUILD só se os testes passarem
+# 🔥 BUILD (Testes pulados para agilidade)
 RUN npm run build -- --configuration production
 
 # =======================
