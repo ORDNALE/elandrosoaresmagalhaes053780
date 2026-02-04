@@ -19,7 +19,7 @@ describe('AuthGuard', () => {
         });
     });
 
-    it('should allow access if authenticated', () => {
+    it('deve permitir acesso se autenticado', () => {
         tokenServiceSpy.isAuthenticated.and.returnValue(true);
 
         const result = TestBed.runInInjectionContext(() => authGuard({} as any, {} as any));
@@ -27,7 +27,7 @@ describe('AuthGuard', () => {
         expect(result).toBeTrue();
     });
 
-    it('should redirect to login if NOT authenticated', () => {
+    it('deve redirecionar para login se NÃO autenticado', () => {
         tokenServiceSpy.isAuthenticated.and.returnValue(false);
         const mockUrlTree = {} as UrlTree;
         routerSpy.createUrlTree.and.returnValue(mockUrlTree);

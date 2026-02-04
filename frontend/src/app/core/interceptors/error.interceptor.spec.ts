@@ -37,7 +37,7 @@ describe('ErrorInterceptor', () => {
         httpMock.verify();
     });
 
-    it('should refresh token on 401 error', () => {
+    it('deve atualizar token em erro 401', () => {
         tokenServiceSpy.getRefreshToken.and.returnValue('refresh-token');
         authApiServiceSpy.refreshToken.and.returnValue(of({ accessToken: 'new-token', refreshToken: 'new-refresh' }));
 
@@ -46,23 +46,14 @@ describe('ErrorInterceptor', () => {
         const req = httpMock.expectOne('/api/data');
         req.flush('Unauthorized', { status: 401, statusText: 'Unauthorized' });
 
-        // Expect refresh token call inside interceptor logic?
-        // Wait, since we mock the service, the interceptor calls it directly.
-        // However, the interceptor returns an Observable that retries the request.
-        // The retry logic is: next(req) again.
-
-        // Since we returned `of(...)` from refreshToken spy, the switchMap proceeds to `next(req)`.
-        // This creates a NEW HTTP request to '/api/data'.
         const retryReq = httpMock.expectOne('/api/data');
-        expect(retryReq.request.headers.get('Authorization')).toBeNull(); // It won't have it unless AuthInterceptor is also there or added manually, 
-        // BUT the ErrorInterceptor logic calls `next(req)` again. 
-        // If AuthInterceptor was in the chain, it would add the token. Here we test ErrorInterceptor in isolation.
+        expect(retryReq.request.headers.get('Authorization')).toBeNull();
 
         expect(tokenServiceSpy.setTokens).toHaveBeenCalledWith('new-token', 'new-refresh', jasmine.any(Boolean));
         retryReq.flush({ data: 'success' });
     });
 
-    it('should logout on 401 if refresh fails', () => {
+    it('deve fazer logout em 401 se refresh falhar', () => {
         tokenServiceSpy.getRefreshToken.and.returnValue('refresh-token');
         authApiServiceSpy.refreshToken.and.returnValue(throwError(() => new Error('Refresh failed')));
 
@@ -79,7 +70,7 @@ describe('ErrorInterceptor', () => {
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
     });
 
-    it('should logout on 401 if NO refresh token available', () => {
+    it('deve fazer logout em 401 se SEM refresh token', () => {
         tokenServiceSpy.getRefreshToken.and.returnValue(null);
 
         httpClient.get('/api/data').subscribe({
@@ -95,9 +86,7 @@ describe('ErrorInterceptor', () => {
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
     });
 
-    it('should force logout if 401 comes from refresh endpoint', () => {
-        // In this case, the URL is /auth/refresh
-        // We need to simulate a request to that URL failing
+    it('deve forçar logout se 401 vier do endpoint de refresh', () => {
         httpClient.get('/auth/refresh').subscribe({
             error: (error) => expect(error).toBeTruthy()
         });

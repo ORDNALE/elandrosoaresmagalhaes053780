@@ -61,12 +61,12 @@ describe('AlbumFacade', () => {
         facade = TestBed.inject(AlbumFacade);
     });
 
-    it('should be created', () => {
+    it('deve ser criado com sucesso', () => {
         expect(facade).toBeTruthy();
     });
 
-    describe('loadAlbums', () => {
-        it('should load albums and update state on success', () => {
+    describe('obterAlbuns', () => {
+        it('deve carregar álbuns e atualizar estado com sucesso', () => {
             const pageRequest: PageRequest = { page: 0, size: 10 };
             const response = {
                 content: [mockAlbum],
@@ -88,7 +88,7 @@ describe('AlbumFacade', () => {
             expect(albumStateSpy.setLoading).toHaveBeenCalledWith(false);
         });
 
-        it('should handle error when loading albums', () => {
+        it('deve tratar erro ao carregar álbuns', () => {
             const pageRequest: PageRequest = { page: 0, size: 10 };
             const error = new HttpErrorResponse({ error: { message: 'Fetch error' } });
 
@@ -102,10 +102,10 @@ describe('AlbumFacade', () => {
         });
     });
 
-    describe('createAlbum', () => {
+    describe('criarAlbum', () => {
         const request: AlbumRequest = { titulo: 'New Album', artistaIds: [1] };
 
-        it('should create album and handle file upload', () => {
+        it('deve criar álbum e fazer upload de capa', () => {
             const files = [new File([''], 'cover.jpg')];
 
             albumApiSpy.create.and.returnValue(of(mockAlbum));
@@ -120,7 +120,7 @@ describe('AlbumFacade', () => {
             expect(routerSpy.navigate).toHaveBeenCalledWith(['/albums']);
         });
 
-        it('should notify success via fallback if WS is not connected', () => {
+        it('deve notificar via fallback se WS desconectado', () => {
             wsServiceSpy.isConnected.and.returnValue(false);
             albumApiSpy.create.and.returnValue(of(mockAlbum));
 
@@ -129,7 +129,7 @@ describe('AlbumFacade', () => {
             expect(notificationSpy.success).toHaveBeenCalledWith(jasmine.stringMatching(/offline mode/i));
         });
 
-        it('should NOT notify success if WS IS connected (waits for event)', () => {
+        it('NÃO deve notificar se WS conectado (aguarda evento)', () => {
             wsServiceSpy.isConnected.and.returnValue(true);
             albumApiSpy.create.and.returnValue(of(mockAlbum));
 
@@ -139,8 +139,8 @@ describe('AlbumFacade', () => {
         });
     });
 
-    describe('updateAlbum', () => {
-        it('should update album, upload files and reload', () => {
+    describe('atualizarAlbum', () => {
+        it('deve atualizar álbum, capas e recarregar', () => {
             const request: AlbumRequest = { titulo: 'Updated Album', artistaIds: [1] };
             const files = [new File([''], 'cover.jpg')];
             const updatedAlbum = { ...mockAlbum, titulo: 'Updated Album' };
@@ -160,8 +160,8 @@ describe('AlbumFacade', () => {
         });
     });
 
-    describe('deleteAlbum', () => {
-        it('should delete album and remove from state', () => {
+    describe('deletarAlbum', () => {
+        it('deve deletar álbum e remover do estado', () => {
             albumApiSpy.delete.and.returnValue(of(void 0));
 
             facade.deleteAlbum(1);

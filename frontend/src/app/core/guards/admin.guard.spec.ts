@@ -19,7 +19,7 @@ describe('AdminGuard', () => {
         });
     });
 
-    it('should allow access if authenticated AND admin', () => {
+    it('deve permitir acesso se autenticado E admin', () => {
         tokenServiceSpy.isAuthenticated.and.returnValue(true);
         tokenServiceSpy.isAdmin.and.returnValue(true);
 
@@ -28,7 +28,7 @@ describe('AdminGuard', () => {
         expect(result).toBeTrue();
     });
 
-    it('should redirect to login if NOT authenticated', () => {
+    it('deve redirecionar para login se NÃO autenticado', () => {
         tokenServiceSpy.isAuthenticated.and.returnValue(false);
 
         const result = TestBed.runInInjectionContext(() => adminGuard({} as any, {} as any));
@@ -37,7 +37,7 @@ describe('AdminGuard', () => {
         expect(result).toBeFalse();
     });
 
-    it('should redirect to artists if authenticated but NOT admin', () => {
+    it('deve redirecionar para artistas se autenticado mas NÃO admin', () => {
         tokenServiceSpy.isAuthenticated.and.returnValue(true);
         tokenServiceSpy.isAdmin.and.returnValue(false);
 

@@ -76,14 +76,14 @@ describe('AuthFacade', () => {
         facade.ngOnDestroy();
     });
 
-    it('should be created', () => {
+    it('deve ser criado com sucesso', () => {
         expect(facade).toBeTruthy();
     });
 
     describe('login', () => {
         const loginRequest: LoginRequest = { username: 'test', password: 'password' };
 
-        it('should handle successful login with rememberMe=false', () => {
+        it('deve realizar login com sucesso e rememberMe=false', () => {
             authApiSpy.login.and.returnValue(of(mockTokenResponse));
             tokenServiceSpy.decodeToken.and.returnValue(mockDecodedToken);
 
@@ -107,7 +107,7 @@ describe('AuthFacade', () => {
             expect(routerSpy.navigate).toHaveBeenCalledWith(['/artists']);
         });
 
-        it('should handle successful login with rememberMe=true', () => {
+        it('deve realizar login com sucesso e rememberMe=true', () => {
             authApiSpy.login.and.returnValue(of(mockTokenResponse));
             tokenServiceSpy.decodeToken.and.returnValue(mockDecodedToken);
 
@@ -121,7 +121,7 @@ describe('AuthFacade', () => {
             expect(tokenServiceSpy.setRememberedEmail).toHaveBeenCalledWith(loginRequest.username);
         });
 
-        it('should handle login error (connection failure)', () => {
+        it('deve lidar com erro na conexão', () => {
             const error = new HttpErrorResponse({ status: 0 });
             authApiSpy.login.and.returnValue(throwError(() => error));
 
@@ -132,7 +132,7 @@ describe('AuthFacade', () => {
             expect(notificationSpy.error).toHaveBeenCalled();
         });
 
-        it('should handle login error (api error)', () => {
+        it('deve lidar com erro da API (401 com mensagem)', () => {
             const error = new HttpErrorResponse({
                 status: 401,
                 error: { message: 'Invalid credentials' }
@@ -146,7 +146,7 @@ describe('AuthFacade', () => {
     });
 
     describe('logout', () => {
-        it('should clear tokens, reset state and navigate', () => {
+        it('deve limpar tokens, resetar estado e navegar para login', () => {
             facade.logout();
 
             expect(tokenServiceSpy.clearTokens).toHaveBeenCalled();
@@ -156,13 +156,13 @@ describe('AuthFacade', () => {
     });
 
     describe('initializeAuth', () => {
-        it('should not initialize if not authenticated', () => {
+        it('não deve inicializar se não estiver autenticado', () => {
             facade.initializeAuth();
 
             expect(authStateSpy.setState).not.toHaveBeenCalled();
         });
 
-        it('should restore state if authenticated', () => {
+        it('deve restaurar estado se estiver autenticado', () => {
             tokenServiceSpy.isAuthenticated.and.returnValue(true);
             tokenServiceSpy.getAccessToken.and.returnValue('stored-token');
             tokenServiceSpy.getRefreshToken.and.returnValue('stored-refresh');
@@ -180,8 +180,8 @@ describe('AuthFacade', () => {
         });
     });
 
-    describe('Session Monitoring (Silent Refresh)', () => {
-        it('should attempt silent refresh if token expiring and user active', fakeAsync(() => {
+    describe('Monitoramento de Sessão (Silent Refresh)', () => {
+        it('deve tentar refresh silencioso se token expirando e usuário ativo', fakeAsync(() => {
             tokenServiceSpy.isAuthenticated.and.returnValue(true);
             tokenServiceSpy.getAccessToken.and.returnValue('token');
             tokenServiceSpy.getRefreshToken.and.returnValue('refresh');
@@ -204,7 +204,7 @@ describe('AuthFacade', () => {
             discardPeriodicTasks();
         }));
 
-        it('should NOT refresh if user is inactive', fakeAsync(() => {
+        it('NÃO deve fazer refresh se usuário inativo', fakeAsync(() => {
             tokenServiceSpy.isAuthenticated.and.returnValue(true);
             tokenServiceSpy.willExpireSoon.and.returnValue(true);
             facade.initializeAuth();

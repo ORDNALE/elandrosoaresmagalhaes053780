@@ -28,7 +28,7 @@ describe('AuthInterceptor', () => {
         httpMock.verify();
     });
 
-    it('should add Authorization header if token exists', () => {
+    it('deve adicionar header Authorization se token existir', () => {
         tokenServiceSpy.getAccessToken.and.returnValue('mock-token');
 
         httpClient.get('/api/data').subscribe();
@@ -38,7 +38,7 @@ describe('AuthInterceptor', () => {
         expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
     });
 
-    it('should NOT add Authorization header if token is missing', () => {
+    it('NÃO deve adicionar header Authorization se token ausente', () => {
         tokenServiceSpy.getAccessToken.and.returnValue(null);
 
         httpClient.get('/api/data').subscribe();
@@ -47,7 +47,7 @@ describe('AuthInterceptor', () => {
         expect(req.request.headers.has('Authorization')).toBeFalse();
     });
 
-    it('should skip auth endpoints', () => {
+    it('deve pular endpoints de auth', () => {
         tokenServiceSpy.getAccessToken.and.returnValue('mock-token');
 
         httpClient.get('/api/auth/login').subscribe();

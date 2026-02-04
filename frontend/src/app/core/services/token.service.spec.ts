@@ -11,7 +11,6 @@ describe('TokenService', () => {
         TestBed.configureTestingModule({});
         service = TestBed.inject(TokenService);
 
-        // Clear storage before each test
         localStorage.clear();
         sessionStorage.clear();
     });
@@ -21,19 +20,19 @@ describe('TokenService', () => {
         sessionStorage.clear();
     });
 
-    it('should be created', () => {
+    it('deve ser criado com sucesso', () => {
         expect(service).toBeTruthy();
     });
 
     describe('setTokens', () => {
-        it('should store tokens in localStorage when persist is true', () => {
+        it('deve armazenar no localStorage se persist=true', () => {
             service.setTokens('acc', 'ref', true);
             expect(localStorage.getItem('access_token')).toBe('acc');
             expect(localStorage.getItem('refresh_token')).toBe('ref');
             expect(sessionStorage.getItem('access_token')).toBeNull();
         });
 
-        it('should store tokens in sessionStorage when persist is false', () => {
+        it('deve armazenar no sessionStorage se persist=false', () => {
             service.setTokens('acc', 'ref', false);
             expect(sessionStorage.getItem('access_token')).toBe('acc');
             expect(sessionStorage.getItem('refresh_token')).toBe('ref');
@@ -41,65 +40,61 @@ describe('TokenService', () => {
         });
     });
 
-    describe('getAccessToken / getRefreshToken', () => {
-        it('should retrieve token from localStorage if present', () => {
+    describe('recuperar tokens', () => {
+        it('deve pegar do localStorage se existir', () => {
             localStorage.setItem('access_token', 'local-acc');
             expect(service.getAccessToken()).toBe('local-acc');
         });
 
-        it('should retrieve token from sessionStorage if present', () => {
+        it('deve pegar do sessionStorage se existir', () => {
             sessionStorage.setItem('access_token', 'session-acc');
             expect(service.getAccessToken()).toBe('session-acc');
         });
     });
 
-    describe('isAuthenticated', () => {
-        it('should return true if token is valid and not expired', () => {
-            // Mock getAccessToken
+    describe('verificarAutenticacao', () => {
+        it('deve retornar true se token válido', () => {
             spyOn(service, 'getAccessToken').and.returnValue(mockToken);
-            // We rely on actual decode logic, so we need a valid structure token (done above)
             expect(service.isAuthenticated()).toBeTrue();
         });
 
-        it('should return false if token is expired', () => {
+        it('deve retornar false se token expirado', () => {
             spyOn(service, 'getAccessToken').and.returnValue(expiredToken);
             expect(service.isAuthenticated()).toBeFalse();
         });
 
-        it('should return false if no token', () => {
+        it('deve retornar false se não houver token', () => {
             spyOn(service, 'getAccessToken').and.returnValue(null);
             expect(service.isAuthenticated()).toBeFalse();
         });
     });
 
-    describe('Role checks', () => {
-        it('should identify admin role', () => {
+    describe('Verificação de Roles', () => {
+        it('deve identificar role de admin', () => {
             spyOn(service, 'getAccessToken').and.returnValue(mockToken);
             expect(service.isAdmin()).toBeTrue();
         });
 
-        it('should check specific roles', () => {
+        it('deve verificar roles específicas', () => {
             spyOn(service, 'getAccessToken').and.returnValue(mockToken);
             expect(service.hasRole('ADMIN')).toBeTrue();
             expect(service.hasRole('USER')).toBeFalse();
         });
     });
 
-    describe('willExpireSoon', () => {
-        it('should return true if token expires within threshold', () => {
-            // Create a token that expires in 1 minute
+    describe('vaiExpirarEmBreve', () => {
+        it('deve retornar true se expirar dentro do limite', () => {
             const nowSec = Math.floor(Date.now() / 1000);
             const exp = nowSec + 60;
-            // Manually mocking decodeToken to avoid generating a real JWT signature
             spyOn(service, 'getAccessToken').and.returnValue('token');
             spyOn(service, 'decodeToken').and.returnValue({ sub: 'user', groups: [], exp: exp } as any);
 
             expect(service.willExpireSoon(5)).toBeTrue();
         });
 
-        it('should return false if token expires later', () => {
+        it('deve retornar false se expirar depois', () => {
             const nowSec = Math.floor(Date.now() / 1000);
-            const exp = nowSec + 3600; // 1 hour
+            const exp = nowSec + 3600;
             spyOn(service, 'getAccessToken').and.returnValue('token');
             spyOn(service, 'decodeToken').and.returnValue({ sub: 'user', groups: [], exp: exp } as any);
 

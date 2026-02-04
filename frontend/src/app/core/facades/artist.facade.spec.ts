@@ -53,12 +53,12 @@ describe('ArtistFacade', () => {
         facade = TestBed.inject(ArtistFacade);
     });
 
-    it('should be created', () => {
+    it('deve ser criado com sucesso', () => {
         expect(facade).toBeTruthy();
     });
 
-    describe('loadArtists', () => {
-        it('should load artists and update state', () => {
+    describe('obterArtistas', () => {
+        it('deve carregar artistas e atualizar estado', () => {
             const pageRequest: PageRequest = { page: 0, size: 10 };
             const response = {
                 content: [mockArtist],
@@ -79,8 +79,8 @@ describe('ArtistFacade', () => {
         });
     });
 
-    describe('createArtist', () => {
-        it('should create artist and notify success', () => {
+    describe('criarArtista', () => {
+        it('deve criar artista e notificar successo', () => {
             const request: ArtistaRequest = { nome: 'New Artist', tipo: TipoArtista.BANDA };
             artistApiSpy.create.and.returnValue(of(mockArtist));
 
@@ -93,8 +93,8 @@ describe('ArtistFacade', () => {
         });
     });
 
-    describe('deleteArtist', () => {
-        it('should delete artist and navigate if redirectTo is provided', () => {
+    describe('deletarArtista', () => {
+        it('deve deletar artista e navegar se redirectTo informado', () => {
             artistApiSpy.delete.and.returnValue(of(void 0));
 
             facade.deleteArtist(1, '/artists');
@@ -105,7 +105,7 @@ describe('ArtistFacade', () => {
             expect(routerSpy.navigate).toHaveBeenCalledWith(['/artists']);
         });
 
-        it('should delete artist and NOT navigate if redirectTo is missing', () => {
+        it('deve deletar artista e NÃO navegar se redirectTo ausente', () => {
             artistApiSpy.delete.and.returnValue(of(void 0));
 
             facade.deleteArtist(1);
