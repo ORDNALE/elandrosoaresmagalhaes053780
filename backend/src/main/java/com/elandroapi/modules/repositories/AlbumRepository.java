@@ -37,6 +37,11 @@ public class AlbumRepository implements PanacheRepository<Album> {
             params.put("tipos", filter.getTipos());
         }
 
+        if (filter.hasTitulo()) {
+            conditions.add("LOWER(alb.titulo) LIKE LOWER(:titulo)");
+            params.put("titulo", "%" + filter.getTitulo() + "%");
+        }
+
         if (!conditions.isEmpty()) {
             query.append(" WHERE ").append(String.join(" AND ", conditions));
         }
@@ -44,11 +49,6 @@ public class AlbumRepository implements PanacheRepository<Album> {
         Sort.Direction direction = "desc".equalsIgnoreCase(filter.getSort())
                 ? Sort.Direction.Descending
                 : Sort.Direction.Ascending;
-
-        if (needsJoin) {
-            query.append(" ORDER BY art.nome ").append(direction == Sort.Direction.Descending ? "DESC" : "ASC");
-            return find(query.toString(), params);
-        }
 
         return find(query.toString(), Sort.by("titulo").direction(direction), params);
     }

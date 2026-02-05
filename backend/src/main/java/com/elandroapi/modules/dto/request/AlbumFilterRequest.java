@@ -17,9 +17,9 @@ public class AlbumFilterRequest {
     @Parameter(description = "Filtrar por nome do artista (busca parcial, case insensitive)")
     private String nomeArtista;
 
-    @QueryParam("tituloAlbum")
+    @QueryParam("titulo")
     @Parameter(description = "Filtrar por título do álbum (busca parcial, case insensitive)")
-    private String tituloAlbum;
+    private String titulo;
 
     @QueryParam("tipo")
     @Parameter(description = "Filtrar por tipo de artista (SOLO, BANDA). Pode enviar múltiplos valores.")
@@ -34,8 +34,8 @@ public class AlbumFilterRequest {
         return nomeArtista != null && !nomeArtista.isBlank();
     }
 
-    public boolean hasTituloAlbum() {
-        return tituloAlbum != null && !tituloAlbum.isBlank();
+    public boolean hasTitulo() {
+        return titulo != null && !titulo.isBlank();
     }
 
     public boolean hasTipos() {
