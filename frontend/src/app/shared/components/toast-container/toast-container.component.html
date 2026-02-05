@@ -1,49 +1,60 @@
-<div class="fixed top-20 right-4 z-50 space-y-3 max-w-md">
+<div class="fixed top-20 right-4 z-50 space-y-3 max-w-sm w-full pointer-events-none">
   @for (toast of toastService.toasts$(); track toast.id) {
-    <div class="animate-slide-in-right bg-[#0f0f13]/95 backdrop-blur-xl rounded-lg p-4 shadow-[0_0_30px_rgba(0,0,0,0.5)] border-2"
-         [ngClass]="{'border-green-500/50': toast.type === 'success', 'border-red-500/50': toast.type === 'error', 'border-yellow-500/50': toast.type === 'warning', 'border-cyan-500/50': toast.type === 'info'}">
-      <div class="flex items-start gap-3">
-        <div class="flex-shrink-0">
-          @if (toast.type === 'success') {
-            <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          }
-          @if (toast.type === 'error') {
-            <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          }
-          @if (toast.type === 'warning') {
-            <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-              </path>
-            </svg>
-          }
-          @if (toast.type === 'info') {
-            <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          }
-        </div>
-        <div class="flex-1 min-w-0">
-          <h4 class="text-white font-semibold mb-1">{{ toast.title }}</h4>
-          @if (toast.message) {
-            <p class="text-sm text-gray-300">{{ toast.message }}</p>
-          }
-        </div>
-        <button (click)="toastService.dismiss(toast.id)"
-                class="flex-shrink-0 text-gray-400 hover:text-white transition-colors">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-            </path>
-          </svg>
-        </button>
-      </div>
+  <div
+    class="pointer-events-auto animate-slide-in-right bg-zinc-900 rounded-lg p-4 shadow-xl border border-zinc-800 flex items-start gap-4 transition-all hover:border-zinc-700 group relative overflow-hidden">
+
+    <!-- Accent Line -->
+    <div class="absolute left-0 top-0 bottom-0 w-1" [ngClass]="{
+             'bg-success-500': toast.type === 'success',
+             'bg-danger-500': toast.type === 'error',
+             'bg-yellow-500': toast.type === 'warning',
+             'bg-primary-500': toast.type === 'info'
+           }"></div>
+
+    <!-- Icon -->
+    <div class="flex-shrink-0 mt-0.5">
+      @if (toast.type === 'success') {
+      <svg class="w-5 h-5 text-success-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      }
+      @if (toast.type === 'error') {
+      <svg class="w-5 h-5 text-danger-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      }
+      @if (toast.type === 'warning') {
+      <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+        </path>
+      </svg>
+      }
+      @if (toast.type === 'info') {
+      <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      }
     </div>
+
+    <!-- Content -->
+    <div class="flex-1 min-w-0 pr-6">
+      <h4 class="text-sm font-medium text-zinc-100">{{ toast.title }}</h4>
+      @if (toast.message) {
+      <p class="text-xs text-zinc-400 mt-1 leading-relaxed">{{ toast.message }}</p>
+      }
+    </div>
+
+    <!-- Close Button -->
+    <button (click)="toastService.dismiss(toast.id)"
+      class="absolute top-2 right-2 p-1 text-zinc-500 hover:text-zinc-300 rounded-md hover:bg-zinc-800 transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+  </div>
   }
 </div>
