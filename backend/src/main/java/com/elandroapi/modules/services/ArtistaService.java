@@ -8,10 +8,12 @@ import com.elandroapi.modules.dto.response.ArtistaResponse;
 import com.elandroapi.modules.entities.Artista;
 import com.elandroapi.modules.mappers.ArtistaMapper;
 import com.elandroapi.modules.repositories.ArtistaRepository;
+import com.elandroapi.modules.repositories.UsuarioArtistaFavoritoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @ApplicationScoped
 public class ArtistaService {
@@ -22,19 +24,25 @@ public class ArtistaService {
     @Inject
     ArtistaMapper mapper;
 
+    @Inject
+    UsuarioArtistaFavoritoRepository favoritoRepository;
+
+    @Inject
+    JsonWebToken jwt;
+
     public Paged<ArtistaResponse> listar(PageRequest pageRequest, ArtistaFilterRequest filter) {
         var query = repository.findByFilters(filter);
         query.page(pageRequest.toPage());
 
         var content = query.list().stream()
-                .map(mapper::toResponse)
+                .map(this::toResponseComFavorito)
                 .toList();
 
         return new Paged<>(query, content);
     }
 
     public ArtistaResponse buscar(Long id) {
-        return mapper.toResponse(buscarPorId(id));
+        return toResponseComFavorito(buscarPorId(id));
     }
 
     @Transactional
@@ -59,5 +67,13 @@ public class ArtistaService {
     private Artista buscarPorId(Long id) {
         return repository.findByIdOptional(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Artista %s não encontrado", id)));
+    }
+
+    private ArtistaResponse toResponseComFavorito(Artista artista) {
+        ArtistaResponse response = mapper.toResponse(artista);
+        if (jwt.getSubject() != null) {
+            response.setFavorito(favoritoRepository.isFavorito(jwt.getSubject(), artista.getId()));
+        }
+        return response;
     }
 }

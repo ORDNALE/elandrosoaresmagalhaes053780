@@ -29,6 +29,9 @@ public class Album {
     @Column(name = "titulo")
     private String titulo;
 
+    @Column(name = "ano")
+    private Integer ano;
+
     @Column(name = "data_cadastro")
     private LocalDateTime dataCadastro;
 

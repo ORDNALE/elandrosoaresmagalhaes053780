@@ -12,6 +12,7 @@ import com.elandroapi.modules.mappers.AlbumMapper;
 import com.elandroapi.modules.repositories.AlbumRepository;
 import com.elandroapi.modules.repositories.ArtistaRepository;
 import com.elandroapi.modules.repositories.GeneroRepository;
+import com.elandroapi.modules.repositories.UsuarioAlbumFavoritoRepository;
 import com.elandroapi.websocket.AlbumNotificationEvent;
 import com.elandroapi.websocket.AlbumWebSocket;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,6 +20,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,24 +38,30 @@ public class AlbumService {
     GeneroRepository generoRepository;
 
     @Inject
+    UsuarioAlbumFavoritoRepository favoritoRepository;
+
+    @Inject
     AlbumMapper mapper;
 
     @Inject
     AlbumWebSocket.Broadcaster broadcaster;
+
+    @Inject
+    JsonWebToken jwt;
 
     public Paged<AlbumResponse> listar(PageRequest pageRequest, AlbumFilterRequest filter) {
         var query = repository.findByFilters(filter);
         query.page(pageRequest.toPage());
 
         var content = query.list().stream()
-                .map(mapper::toResponse)
+                .map(this::toResponseComFavorito)
                 .toList();
 
         return new Paged<>(query, content);
     }
 
     public AlbumResponse buscar(Long id) {
-        return mapper.toResponse(buscarPorId(id));
+        return toResponseComFavorito(buscarPorId(id));
     }
 
     @Transactional
@@ -127,5 +135,13 @@ public class AlbumService {
         }
 
         return generos;
+    }
+
+    private AlbumResponse toResponseComFavorito(Album album) {
+        AlbumResponse response = mapper.toResponse(album);
+        if (jwt.getSubject() != null) {
+            response.setFavorito(favoritoRepository.isFavorito(jwt.getSubject(), album.getId()));
+        }
+        return response;
     }
 }

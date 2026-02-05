@@ -15,4 +15,5 @@ public class ArtistaResponse {
     private String nome;
     private TipoArtista tipo;
     private List<AlbumResumoResponse> albuns;
+    private boolean favorito;
 }
