@@ -28,7 +28,7 @@ export class AlbumListComponent implements OnInit, OnDestroy {
   readonly pageCount$ = this.albumFacade.pageCount$;
   readonly total$ = this.albumFacade.total$;
 
-  pageSize = signal(12);
+  pageSize = signal(10);
   sortField = signal<'titulo'>('titulo');
   sortDirection = signal<'asc' | 'desc'>('asc');
 
