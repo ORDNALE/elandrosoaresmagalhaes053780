@@ -1,11 +1,9 @@
 import { Routes } from '@angular/router';
-import { ArtistListComponent } from './artist-list/artist-list.component';
-import { ArtistDetailComponent } from './artist-detail/artist-detail.component';
 
 export const ARTISTS_ROUTES: Routes = [
   {
     path: '',
-    component: ArtistListComponent
+    loadComponent: () => import('./artist-list/artist-list.component').then(m => m.ArtistListComponent)
   },
   {
     path: 'new',
@@ -13,7 +11,7 @@ export const ARTISTS_ROUTES: Routes = [
   },
   {
     path: ':id',
-    component: ArtistDetailComponent
+    loadComponent: () => import('./artist-detail/artist-detail.component').then(m => m.ArtistDetailComponent)
   },
   {
     path: ':id/edit',
