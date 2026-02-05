@@ -7,9 +7,11 @@ import com.elandroapi.modules.dto.request.AlbumRequest;
 import com.elandroapi.modules.dto.response.AlbumResponse;
 import com.elandroapi.modules.entities.Album;
 import com.elandroapi.modules.entities.Artista;
+import com.elandroapi.modules.entities.Genero;
 import com.elandroapi.modules.mappers.AlbumMapper;
 import com.elandroapi.modules.repositories.AlbumRepository;
 import com.elandroapi.modules.repositories.ArtistaRepository;
+import com.elandroapi.modules.repositories.GeneroRepository;
 import com.elandroapi.websocket.AlbumNotificationEvent;
 import com.elandroapi.websocket.AlbumWebSocket;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -18,6 +20,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 
+import java.util.Collections;
 import java.util.List;
 
 @ApplicationScoped
@@ -28,6 +31,9 @@ public class AlbumService {
 
     @Inject
     ArtistaRepository artistaRepository;
+
+    @Inject
+    GeneroRepository generoRepository;
 
     @Inject
     AlbumMapper mapper;
@@ -53,9 +59,11 @@ public class AlbumService {
     @Transactional
     public AlbumResponse salvar(AlbumRequest request) {
         List<Artista> artistas = buscarArtistas(request.getArtistaIds());
+        List<Genero> generos = buscarGeneros(request.getGeneroIds());
 
         var model = mapper.toModel(request);
         model.setArtistas(artistas);
+        model.setGeneros(generos);
         repository.persist(model);
 
         broadcaster.broadcast(AlbumNotificationEvent.novoAlbum(model.getId(), model.getTitulo()));
@@ -67,9 +75,11 @@ public class AlbumService {
     public void atualizar(Long id, AlbumRequest request) {
         var model = buscarPorId(id);
         List<Artista> artistas = buscarArtistas(request.getArtistaIds());
+        List<Genero> generos = buscarGeneros(request.getGeneroIds());
 
         mapper.updateModelFromRequest(model, request);
         model.setArtistas(artistas);
+        model.setGeneros(generos);
         repository.persist(model);
     }
 
@@ -99,5 +109,23 @@ public class AlbumService {
         }
 
         return artistas;
+    }
+
+    private List<Genero> buscarGeneros(List<Long> generoIds) {
+        if (generoIds == null || generoIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Genero> generos = generoRepository.list("id IN ?1", generoIds);
+
+        if (generos.size() != generoIds.size()) {
+            List<Long> encontrados = generos.stream().map(Genero::getId).toList();
+            List<Long> naoEncontrados = generoIds.stream()
+                    .filter(id -> !encontrados.contains(id))
+                    .toList();
+            throw new NotFoundException(String.format("Gêneros não encontrados: %s", naoEncontrados));
+        }
+
+        return generos;
     }
 }

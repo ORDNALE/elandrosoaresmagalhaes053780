@@ -17,6 +17,8 @@ public class AlbumRequest {
     private String titulo;
 
     @NotEmpty(message = "artistaIds deve conter ao menos um artista")
-    @Schema(description = "IDs dos artistas do álbum", examples = "[1, 2]")
     private List<Long> artistaIds;
+
+    @Schema(description = "IDs dos gêneros musicais")
+    private List<Long> generoIds;
 }

@@ -40,6 +40,14 @@ public class Album {
     )
     private List<Artista> artistas = new ArrayList<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "album_genero",
+            joinColumns = @JoinColumn(name = "album_id"),
+            inverseJoinColumns = @JoinColumn(name = "genero_id")
+    )
+    private List<Genero> generos = new ArrayList<>();
+
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CapaAlbum> capas;
 
