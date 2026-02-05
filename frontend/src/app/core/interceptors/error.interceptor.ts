@@ -1,9 +1,10 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, throwError, switchMap } from 'rxjs';
+import { catchError, throwError, switchMap, EMPTY } from 'rxjs';
 import { TokenService } from '../services/token.service';
 import { AuthApiService } from '../services/api';
+import { NotificationService } from '../services/notification.service';
 
 /**
  * HTTP Interceptor to handle errors globally
@@ -16,9 +17,16 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     const router = inject(Router);
     const tokenService = inject(TokenService);
     const authApiService = inject(AuthApiService);
+    const notificationService = inject(NotificationService);
 
     return next(req).pipe(
         catchError((error: HttpErrorResponse) => {
+            // Handle 429 Too Many Requests
+            if (error.status === 429) {
+                notificationService.warning('Muitas requisições. Por favor, aguarde alguns instantes.');
+                return EMPTY;
+            }
+
             // Handle 401 Unauthorized
             if (error.status === 401) {
                 // If it's a refresh token request that failed, logout

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, tap, catchError, throwError } from 'rxjs';
+import { Observable, tap, catchError, throwError, finalize } from 'rxjs';
 import { AlbumApiService } from '../services/api';
 import { AlbumStateService } from '../state';
 import {
@@ -49,25 +49,25 @@ export class AlbumFacade {
     this.albumState.setLoading(true);
     this.albumState.clearError();
 
-    this.albumApi.list(pageRequest, filter).subscribe({
-      next: (response) => {
-        this.albumState.setAlbums(response.content);
-        this.albumState.setPagination(
-          response.page,
-          response.pageCount,
-          response.total
-        );
-        this.albumState.setLoading(false);
-      },
-      error: (error: HttpErrorResponse) => {
-        const apiError = error.error as ApiError;
-        const message = apiError?.message || error.message || 'Falha ao carregar álbuns';
+    this.albumApi.list(pageRequest, filter)
+      .pipe(finalize(() => this.albumState.setLoading(false)))
+      .subscribe({
+        next: (response) => {
+          this.albumState.setAlbums(response.content);
+          this.albumState.setPagination(
+            response.page,
+            response.pageCount,
+            response.total
+          );
+        },
+        error: (error: HttpErrorResponse) => {
+          const apiError = error.error as ApiError;
+          const message = apiError?.message || error.message || 'Falha ao carregar álbuns';
 
-        this.albumState.setError(message);
-        this.albumState.setLoading(false);
-        this.notification.error(message);
-      }
-    });
+          this.albumState.setError(message);
+          this.notification.error(message);
+        }
+      });
   }
 
   /**
@@ -77,21 +77,21 @@ export class AlbumFacade {
     this.albumState.setLoading(true);
     this.albumState.clearError();
 
-    this.albumApi.getById(id).subscribe({
-      next: (album) => {
-        this.albumState.setSelectedAlbum(album);
-        this.albumState.setLoading(false);
-      },
-      error: (error: HttpErrorResponse) => {
-        const apiError = error.error as ApiError;
-        const message = apiError?.message || error.message || 'Falha ao carregar álbum';
+    this.albumApi.getById(id)
+      .pipe(finalize(() => this.albumState.setLoading(false)))
+      .subscribe({
+        next: (album) => {
+          this.albumState.setSelectedAlbum(album);
+        },
+        error: (error: HttpErrorResponse) => {
+          const apiError = error.error as ApiError;
+          const message = apiError?.message || error.message || 'Falha ao carregar álbum';
 
-        this.albumState.setError(message);
-        this.albumState.setLoading(false);
-        this.notification.error(message);
-        this.router.navigate(['/albums']);
-      }
-    });
+          this.albumState.setError(message);
+          this.notification.error(message);
+          this.router.navigate(['/albums']);
+        }
+      });
   }
 
   /**
@@ -109,11 +109,11 @@ export class AlbumFacade {
           );
         }
         return of(album);
-      })
+      }),
+      finalize(() => this.albumState.setLoading(false))
     ).subscribe({
       next: (album) => {
         this.albumState.addAlbum(album);
-        this.albumState.setLoading(false);
 
         // Smart Fallback: Only rely on WS if connected
         if (!this.wsService.isConnected()) {
@@ -130,7 +130,6 @@ export class AlbumFacade {
         const message = apiError?.message || error.message || 'Falha ao criar álbum';
 
         this.albumState.setError(message);
-        this.albumState.setLoading(false);
         this.notification.error(message);
       }
     });
@@ -150,12 +149,12 @@ export class AlbumFacade {
         }
         return of(null);
       }),
-      switchMap(() => this.albumApi.getById(id))
+      switchMap(() => this.albumApi.getById(id)),
+      finalize(() => this.albumState.setLoading(false))
     ).subscribe({
       next: (album) => {
         this.albumState.updateAlbum(id, album);
         this.albumState.setSelectedAlbum(album);
-        this.albumState.setLoading(false);
         this.notification.success('Álbum atualizado com sucesso!');
         this.router.navigate(['/albums']);
       },
@@ -164,7 +163,6 @@ export class AlbumFacade {
         const message = apiError?.message || error.message || 'Falha ao atualizar álbum';
 
         this.albumState.setError(message);
-        this.albumState.setLoading(false);
         this.notification.error(message);
       }
     });
@@ -177,21 +175,21 @@ export class AlbumFacade {
     this.albumState.setLoading(true);
     this.albumState.clearError();
 
-    this.albumApi.delete(id).subscribe({
-      next: () => {
-        this.albumState.removeAlbum(id);
-        this.albumState.setLoading(false);
-        this.notification.success('Álbum excluído com sucesso!');
-      },
-      error: (error: HttpErrorResponse) => {
-        const apiError = error.error as ApiError;
-        const message = apiError?.message || error.message || 'Falha ao excluir álbum';
+    this.albumApi.delete(id)
+      .pipe(finalize(() => this.albumState.setLoading(false)))
+      .subscribe({
+        next: () => {
+          this.albumState.removeAlbum(id);
+          this.notification.success('Álbum excluído com sucesso!');
+        },
+        error: (error: HttpErrorResponse) => {
+          const apiError = error.error as ApiError;
+          const message = apiError?.message || error.message || 'Falha ao excluir álbum';
 
-        this.albumState.setError(message);
-        this.albumState.setLoading(false);
-        this.notification.error(message);
-      }
-    });
+          this.albumState.setError(message);
+          this.notification.error(message);
+        }
+      });
   }
 
   /**

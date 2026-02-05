@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, tap, catchError, throwError, switchMap, map } from 'rxjs';
+import { Observable, tap, catchError, throwError, switchMap, map, finalize } from 'rxjs';
 import { ArtistApiService } from '../services/api';
 import { ArtistStateService } from '../state';
 import {
@@ -43,25 +43,25 @@ export class ArtistFacade {
     this.artistState.setLoading(true);
     this.artistState.clearError();
 
-    this.artistApi.list(pageRequest, filter).subscribe({
-      next: (response) => {
-        this.artistState.setArtists(response.content);
-        this.artistState.setPagination(
-          response.page,
-          response.pageCount,
-          response.total
-        );
-        this.artistState.setLoading(false);
-      },
-      error: (error: HttpErrorResponse) => {
-        const apiError = error.error as ApiError;
-        const message = apiError?.message || error.message || 'Falha ao carregar artistas';
+    this.artistApi.list(pageRequest, filter)
+      .pipe(finalize(() => this.artistState.setLoading(false)))
+      .subscribe({
+        next: (response) => {
+          this.artistState.setArtists(response.content);
+          this.artistState.setPagination(
+            response.page,
+            response.pageCount,
+            response.total
+          );
+        },
+        error: (error: HttpErrorResponse) => {
+          const apiError = error.error as ApiError;
+          const message = apiError?.message || error.message || 'Falha ao carregar artistas';
 
-        this.artistState.setError(message);
-        this.artistState.setLoading(false);
-        this.notification.error(message);
-      }
-    });
+          this.artistState.setError(message);
+          this.notification.error(message);
+        }
+      });
   }
 
   /**
@@ -71,21 +71,21 @@ export class ArtistFacade {
     this.artistState.setLoading(true);
     this.artistState.clearError();
 
-    this.artistApi.getById(id).subscribe({
-      next: (artist) => {
-        this.artistState.setSelectedArtist(artist);
-        this.artistState.setLoading(false);
-      },
-      error: (error: HttpErrorResponse) => {
-        const apiError = error.error as ApiError;
-        const message = apiError?.message || error.message || 'Falha ao carregar artista';
+    this.artistApi.getById(id)
+      .pipe(finalize(() => this.artistState.setLoading(false)))
+      .subscribe({
+        next: (artist) => {
+          this.artistState.setSelectedArtist(artist);
+        },
+        error: (error: HttpErrorResponse) => {
+          const apiError = error.error as ApiError;
+          const message = apiError?.message || error.message || 'Falha ao carregar artista';
 
-        this.artistState.setError(message);
-        this.artistState.setLoading(false);
-        this.notification.error(message);
-        this.router.navigate(['/artists']);
-      }
-    });
+          this.artistState.setError(message);
+          this.notification.error(message);
+          this.router.navigate(['/artists']);
+        }
+      });
   }
 
   /**
@@ -95,22 +95,22 @@ export class ArtistFacade {
     this.artistState.setLoading(true);
     this.artistState.clearError();
 
-    this.artistApi.create(request).subscribe({
-      next: (artist) => {
-        this.artistState.addArtist(artist);
-        this.artistState.setLoading(false);
-        this.notification.success('Artista criado com sucesso!');
-        this.router.navigate(['/artists']);
-      },
-      error: (error: HttpErrorResponse) => {
-        const apiError = error.error as ApiError;
-        const message = apiError?.message || error.message || 'Falha ao criar artista';
+    this.artistApi.create(request)
+      .pipe(finalize(() => this.artistState.setLoading(false)))
+      .subscribe({
+        next: (artist) => {
+          this.artistState.addArtist(artist);
+          this.notification.success('Artista criado com sucesso!');
+          this.router.navigate(['/artists']);
+        },
+        error: (error: HttpErrorResponse) => {
+          const apiError = error.error as ApiError;
+          const message = apiError?.message || error.message || 'Falha ao criar artista';
 
-        this.artistState.setError(message);
-        this.artistState.setLoading(false);
-        this.notification.error(message);
-      }
-    });
+          this.artistState.setError(message);
+          this.notification.error(message);
+        }
+      });
   }
 
   /**
@@ -121,12 +121,12 @@ export class ArtistFacade {
     this.artistState.clearError();
 
     this.artistApi.update(id, request).pipe(
-      switchMap(() => this.artistApi.getById(id))
+      switchMap(() => this.artistApi.getById(id)),
+      finalize(() => this.artistState.setLoading(false))
     ).subscribe({
       next: (artist) => {
         this.artistState.updateArtist(id, artist);
         this.artistState.setSelectedArtist(artist);
-        this.artistState.setLoading(false);
         this.notification.success('Artista atualizado com sucesso!');
         this.router.navigate(['/artists']);
       },
@@ -135,7 +135,6 @@ export class ArtistFacade {
         const message = apiError?.message || error.message || 'Falha ao atualizar artista';
 
         this.artistState.setError(message);
-        this.artistState.setLoading(false);
         this.notification.error(message);
       }
     });
@@ -148,24 +147,24 @@ export class ArtistFacade {
     this.artistState.setLoading(true);
     this.artistState.clearError();
 
-    this.artistApi.delete(id).subscribe({
-      next: () => {
-        this.artistState.removeArtist(id);
-        this.artistState.setLoading(false);
-        this.notification.success('Artista excluído com sucesso!');
-        if (redirectTo) {
-          this.router.navigate([redirectTo]);
-        }
-      },
-      error: (error: HttpErrorResponse) => {
-        const apiError = error.error as ApiError;
-        const message = apiError?.message || error.message || 'Falha ao excluir artista';
+    this.artistApi.delete(id)
+      .pipe(finalize(() => this.artistState.setLoading(false)))
+      .subscribe({
+        next: () => {
+          this.artistState.removeArtist(id);
+          this.notification.success('Artista excluído com sucesso!');
+          if (redirectTo) {
+            this.router.navigate([redirectTo]);
+          }
+        },
+        error: (error: HttpErrorResponse) => {
+          const apiError = error.error as ApiError;
+          const message = apiError?.message || error.message || 'Falha ao excluir artista';
 
-        this.artistState.setError(message);
-        this.artistState.setLoading(false);
-        this.notification.error(message);
-      }
-    });
+          this.artistState.setError(message);
+          this.notification.error(message);
+        }
+      });
   }
 
   /**

@@ -1,7 +1,7 @@
 import { Injectable, inject, OnDestroy, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, interval, Subscription, fromEvent, merge, of } from 'rxjs';
-import { switchMap, filter, take, tap, throttleTime } from 'rxjs/operators';
+import { switchMap, filter, take, tap, throttleTime, finalize } from 'rxjs/operators';
 import { AuthApiService } from '../services/api';
 import { TokenService } from '../services/token.service';
 import { AuthStateService } from '../state';
@@ -128,47 +128,47 @@ export class AuthFacade implements OnDestroy {
     this.authState.setLoading(true);
     this.authState.clearError();
 
-    this.authApi.login(request).subscribe({
-      next: (response) => {
-        // Store tokens
-        this.tokenService.setTokens(response.accessToken, response.refreshToken, rememberMe);
+    this.authApi.login(request)
+      .pipe(finalize(() => this.authState.setLoading(false)))
+      .subscribe({
+        next: (response) => {
+          // Store tokens
+          this.tokenService.setTokens(response.accessToken, response.refreshToken, rememberMe);
 
-        if (rememberMe) {
-          this.tokenService.setRememberedEmail(request.username);
-        } else {
-          this.tokenService.clearRememberedEmail();
+          if (rememberMe) {
+            this.tokenService.setRememberedEmail(request.username);
+          } else {
+            this.tokenService.clearRememberedEmail();
+          }
+
+          // Decode token and update state
+          const decoded = this.tokenService.decodeToken(response.accessToken);
+          this.authState.setState({
+            isAuthenticated: true,
+            accessToken: response.accessToken,
+            refreshToken: response.refreshToken,
+            username: decoded?.sub || null,
+            roles: decoded?.groups || []
+          });
+
+          this.notification.success('Login realizado com sucesso!');
+          this.startSessionMonitoring();
+          this.router.navigate(['/artists']);
+        },
+        error: (error: HttpErrorResponse) => {
+          const apiError = error.error as ApiError;
+          let message: string;
+
+          if (error.status === 0) {
+            message = 'Não foi possível conectar ao servidor. Verifique se o backend está rodando.';
+          } else {
+            message = apiError?.message || error.message || 'Falha no login. Verifique suas credenciais.';
+          }
+
+          this.authState.setError(message);
+          this.notification.error(message);
         }
-
-        // Decode token and update state
-        const decoded = this.tokenService.decodeToken(response.accessToken);
-        this.authState.setState({
-          isAuthenticated: true,
-          accessToken: response.accessToken,
-          refreshToken: response.refreshToken,
-          username: decoded?.sub || null,
-          roles: decoded?.groups || []
-        });
-
-        this.authState.setLoading(false);
-        this.notification.success('Login realizado com sucesso!');
-        this.startSessionMonitoring();
-        this.router.navigate(['/artists']);
-      },
-      error: (error: HttpErrorResponse) => {
-        const apiError = error.error as ApiError;
-        let message: string;
-
-        if (error.status === 0) {
-          message = 'Não foi possível conectar ao servidor. Verifique se o backend está rodando.';
-        } else {
-          message = apiError?.message || error.message || 'Falha no login. Verifique suas credenciais.';
-        }
-
-        this.authState.setError(message);
-        this.authState.setLoading(false);
-        this.notification.error(message);
-      }
-    });
+      });
   }
 
   /**
