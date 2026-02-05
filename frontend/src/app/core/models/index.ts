@@ -3,4 +3,6 @@ export * from './auth.model';
 export * from './artist.model';
 export * from './album.model';
 export * from './pagination.model';
+export * from './dashboard.model';
+
 export * from './error.model';

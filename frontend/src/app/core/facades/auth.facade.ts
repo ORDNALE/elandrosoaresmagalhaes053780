@@ -153,7 +153,7 @@ export class AuthFacade implements OnDestroy {
 
           this.notification.success('Login realizado com sucesso!');
           this.startSessionMonitoring();
-          this.router.navigate(['/artists']);
+          this.router.navigate(['/dashboard']);
         },
         error: (error: HttpErrorResponse) => {
           const apiError = error.error as ApiError;

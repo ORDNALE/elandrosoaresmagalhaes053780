@@ -1,0 +1,168 @@
+<div class="space-y-6 animate-fade-in pb-8">
+
+    <!-- Header Section -->
+    <div>
+        <h1 class="text-3xl font-bold text-white mb-1 tracking-tight">Bem-vindo, {{ user || 'Admin' }}</h1>
+        <p class="text-zinc-400 text-base">Visão geral da sua coleção musical.</p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading()" class="flex justify-center py-12">
+        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-purple-500"></div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error()"
+        class="bg-red-900/10 border border-red-500/20 text-red-400 p-4 rounded-xl flex items-center justify-between">
+        <p class="text-sm font-medium">{{ error() }}</p>
+        <button (click)="ngOnInit()"
+            class="px-3 py-1.5 text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors uppercase tracking-wide">
+            Tentar novamente
+        </button>
+    </div>
+
+    <!-- Content Grid -->
+    <div *ngIf="stats() as data" class="space-y-6">
+
+        <!-- Stats Cards Grid (3 Columns) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <!-- Total Artists -->
+            <div
+                class="bg-zinc-900 border border-zinc-800 rounded-xl px-8 py-6 flex flex-col justify-between min-h-[140px] hover:border-purple-500/30 transition-all duration-300 group">
+                <div class="flex justify-between items-start">
+                    <div class="flex flex-col">
+                        <h2 class="text-4xl font-bold text-white mt-2 leading-none">{{ data.totalArtistas }}</h2>
+                        <span class="text-zinc-500 text-xs font-semibold uppercase tracking-wider mt-2">Artistas</span>
+                    </div>
+                    <div
+                        class="p-2 bg-zinc-800/50 rounded-lg text-purple-500 group-hover:text-purple-400 group-hover:bg-purple-500/10 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex items-center text-xs text-zinc-500 mt-4">
+                    <span class="w-1.5 h-1.5 rounded-full bg-purple-500 mr-2"></span>
+                    Cadastrados no sistema
+                </div>
+            </div>
+
+            <!-- Total Albums -->
+            <div
+                class="bg-zinc-900 border border-zinc-800 rounded-xl px-8 py-6 flex flex-col justify-between min-h-[140px] hover:border-purple-500/30 transition-all duration-300 group">
+                <div class="flex justify-between items-start">
+                    <div class="flex flex-col">
+                        <h2 class="text-4xl font-bold text-white mt-2 leading-none">{{ data.totalAlbuns }}</h2>
+                        <span class="text-zinc-500 text-xs font-semibold uppercase tracking-wider mt-2">Álbuns</span>
+                    </div>
+                    <div
+                        class="p-2 bg-zinc-800/50 rounded-lg text-purple-500 group-hover:text-purple-400 group-hover:bg-purple-500/10 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex items-center text-xs text-zinc-500 mt-4">
+                    <span class="w-1.5 h-1.5 rounded-full bg-purple-500 mr-2"></span>
+                    Disponíveis no catálogo
+                </div>
+            </div>
+
+            <!-- New This Week -->
+            <div
+                class="bg-zinc-900 border border-zinc-800 rounded-xl px-8 py-6 flex flex-col justify-between min-h-[140px] hover:border-purple-500/30 transition-all duration-300 group">
+                <div class="flex justify-between items-start">
+                    <div class="flex flex-col">
+                        <h2 class="text-4xl font-bold text-white mt-2 leading-none">{{ data.novidadesSemana }}</h2>
+                        <span class="text-zinc-500 text-xs font-semibold uppercase tracking-wider mt-2">Novidades</span>
+                    </div>
+                    <div
+                        class="p-2 bg-zinc-800/50 rounded-lg text-purple-500 group-hover:text-purple-400 group-hover:bg-purple-500/10 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon
+                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                            </polygon>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex items-center text-xs text-zinc-500 mt-4">
+                    <span class="w-1.5 h-1.5 rounded-full bg-purple-500 mr-2"></span>
+                    Adicionados esta semana
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Management Actions (Split 50/50) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Manage Artists -->
+            <div
+                class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden hover:border-purple-500/30 transition-all duration-300 group min-h-[220px]">
+                <div class="p-8 h-full flex flex-col items-start relative">
+                    <div class="flex items-center justify-between w-full mb-3">
+                        <span
+                            class="px-2.5 py-0.5 rounded-md bg-purple-500/10 text-purple-400 text-[10px] font-bold tracking-widest uppercase border border-purple-500/20">Gerenciar</span>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">Artistas
+                    </h3>
+                    <p class="text-zinc-500 text-sm mb-6 leading-relaxed max-w-sm">
+                        Adicione, edite ou remova perfis. Mantenha as biografias e fotos sempre atualizadas.
+                    </p>
+
+                    <div class="mt-auto">
+                        <a routerLink="/artists"
+                            class="inline-flex items-center justify-center px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-lg shadow-purple-900/20">
+                            Acessar Artistas
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="ml-2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Albums -->
+            <div
+                class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden hover:border-purple-500/30 transition-all duration-300 group min-h-[220px]">
+                <div class="p-8 h-full flex flex-col items-start relative">
+                    <div class="flex items-center justify-between w-full mb-3">
+                        <span
+                            class="px-2.5 py-0.5 rounded-md bg-zinc-800 text-zinc-400 text-[10px] font-bold tracking-widest uppercase border border-zinc-700">Gerenciar</span>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">Álbuns
+                    </h3>
+                    <p class="text-zinc-500 text-sm mb-6 leading-relaxed max-w-sm">
+                        Controle o catálogo de lançamentos. Organize faixas, capas e metadados de áudio.
+                    </p>
+
+                    <div class="mt-auto">
+                        <a routerLink="/albums"
+                            class="inline-flex items-center justify-center px-5 py-2.5 border border-purple-500/50 text-purple-400 hover:bg-purple-500/10 text-sm font-medium rounded-lg transition-all duration-200">
+                            Acessar Álbuns
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="ml-2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
