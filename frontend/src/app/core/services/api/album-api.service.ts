@@ -29,7 +29,7 @@ export class AlbumApiService {
             .set('size', pageRequest.size.toString());
 
         if (filter?.titulo) {
-            params = params.set('tituloAlbum', filter.titulo);
+            params = params.set('titulo', filter.titulo);
         }
 
         if (filter?.nomeArtista) {
