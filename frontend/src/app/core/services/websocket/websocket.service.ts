@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { Observable, Subject, timer, EMPTY, ReplaySubject } from 'rxjs';
-import { retry, tap, delayWhen, switchAll, catchError } from 'rxjs/operators';
+import { Observable, timer, EMPTY, ReplaySubject } from 'rxjs';
+import { retry, tap, switchAll, catchError } from 'rxjs/operators';
 import { environment } from '@environments/environment';
 import { TokenService } from '../token.service';
 
@@ -28,7 +28,6 @@ export class WebSocketService {
     public messages$: Observable<any> = this.messagesSubject$.pipe(switchAll());
 
     private reconnectInterval = 5000; // 5 seconds
-    private reconnectAttempts = 0;
     private maxReconnectAttempts = 10;
 
     connect(): void {
@@ -40,15 +39,12 @@ export class WebSocketService {
                     error: (error) => console.error('WebSocket error:', error)
                 }),
                 retry({
-                    count: this.maxReconnectAttempts, // Substitui a lógica manual de max attempts
+                    count: this.maxReconnectAttempts,
                     delay: (error, retryCount) => {
-                        this.reconnectAttempts = retryCount; // Sincroniza com sua variável se precisar
                         console.log(`Tentativa de reconexão do WebSocket ${retryCount}/${this.maxReconnectAttempts}`);
-
-                        // Retorna o timer de delay
                         return timer(this.reconnectInterval);
                     },
-                    resetOnSuccess: true // Reseta o contador automaticamente se conectar com sucesso!
+                    resetOnSuccess: true
                 }),
                 catchError((error) => {
                     console.error('Número máximo de tentativas de reconexão atingido ou erro fatal:', error);
@@ -71,7 +67,6 @@ export class WebSocketService {
             openObserver: {
                 next: () => {
                     console.log('WebSocket conectado');
-                    this.reconnectAttempts = 0;
                 }
             },
             closeObserver: {
@@ -101,7 +96,6 @@ export class WebSocketService {
         return !!this.socket$ && !this.socket$.closed;
     }
 
-    // Método específico para eventos de criação de álbum
     onAlbumCreated(): Observable<AlbumCreatedEvent> {
         return this.messages$ as Observable<AlbumCreatedEvent>;
     }

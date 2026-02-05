@@ -1,13 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, tap, catchError, throwError, switchMap, map, finalize } from 'rxjs';
+import { switchMap, finalize } from 'rxjs';
 import { ArtistApiService } from '../services/api';
 import { ArtistStateService } from '../state';
 import {
   ArtistaRequest,
-  ArtistaResponse,
   ArtistaFilterRequest,
   PageRequest,
-  Paged,
   ApiError
 } from '@core/models';
 import { NotificationService } from '../services/notification.service';

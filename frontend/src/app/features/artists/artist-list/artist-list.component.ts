@@ -5,8 +5,7 @@ import { RouterLink } from '@angular/router';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { ArtistFacade, AuthFacade } from '@core/facades';
 import { DialogService } from '@core/services/dialog.service';
-import { TipoArtista, ApiError } from '@core/models';
-import { HttpErrorResponse } from '@angular/common/http';
+import { TipoArtista } from '@core/models';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 
 @Component({
@@ -19,21 +18,6 @@ export class ArtistListComponent implements OnInit {
   private readonly artistFacade = inject(ArtistFacade);
   private readonly authFacade = inject(AuthFacade);
   private readonly dialogService = inject(DialogService);
-
-  // ... (existing properties)
-
-  async deleteArtist(id: number, name: string): Promise<void> {
-    const confirmed = await this.dialogService.confirm({
-      title: 'Excluir Artista',
-      message: `Tem certeza que deseja excluir "${name}"?`,
-      confirmText: 'Excluir',
-      type: 'danger'
-    });
-
-    if (confirmed) {
-      this.artistFacade.deleteArtist(id);
-    }
-  }
 
   readonly artists$ = this.artistFacade.artists$;
   readonly loading$ = this.artistFacade.loading$;
@@ -99,6 +83,19 @@ export class ArtistListComponent implements OnInit {
   clearFilters(): void {
     this.filterForm.reset({ nome: '', tipo: '' });
     this.loadArtists(0);
+  }
+
+  async deleteArtist(id: number, name: string): Promise<void> {
+    const confirmed = await this.dialogService.confirm({
+      title: 'Excluir Artista',
+      message: `Tem certeza que deseja excluir "${name}"?`,
+      confirmText: 'Excluir',
+      type: 'danger'
+    });
+
+    if (confirmed) {
+      this.artistFacade.deleteArtist(id);
+    }
   }
 
   get isAdmin(): boolean {

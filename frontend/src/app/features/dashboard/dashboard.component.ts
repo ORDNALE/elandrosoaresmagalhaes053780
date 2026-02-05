@@ -16,8 +16,8 @@ export class DashboardComponent implements OnInit {
 
     readonly stats = this.dashboardFacade.stats;
     readonly isLoading = this.dashboardFacade.isLoading;
-    readonly error = this.dashboardFacade.error; // Make sure Facade exposes this as signal
-    readonly user = this.authFacade.getUsername(); // Or observe if it's a signal
+    readonly error = this.dashboardFacade.error;
+    readonly user = this.authFacade.getUsername();
 
     ngOnInit(): void {
         this.dashboardFacade.loadStats();

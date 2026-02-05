@@ -1,13 +1,13 @@
 import { Injectable, inject, OnDestroy, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, interval, Subscription, fromEvent, merge, of } from 'rxjs';
-import { switchMap, filter, take, tap, throttleTime, finalize } from 'rxjs/operators';
+import { interval, Subscription, fromEvent, merge } from 'rxjs';
+import { throttleTime, finalize } from 'rxjs/operators';
 import { AuthApiService } from '../services/api';
 import { TokenService } from '../services/token.service';
 import { AuthStateService } from '../state';
 import { NotificationService } from '../services/notification.service';
 import { DialogService } from '../services/dialog.service';
-import { LoginRequest, TokenResponse, ApiError } from '@core/models';
+import { LoginRequest, ApiError } from '@core/models';
 import { HttpErrorResponse } from '@angular/common/http';
 
 /**
@@ -207,6 +207,13 @@ export class AuthFacade implements OnDestroy {
    */
   getUsername(): string | null {
     return this.tokenService.getUsername();
+  }
+
+  /**
+   * Get remembered email
+   */
+  getRememberedEmail(): string | null {
+    return this.tokenService.getRememberedEmail();
   }
 
   /**

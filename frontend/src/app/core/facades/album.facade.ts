@@ -1,13 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, tap, catchError, throwError, finalize } from 'rxjs';
+import { finalize } from 'rxjs';
 import { AlbumApiService } from '../services/api';
 import { AlbumStateService } from '../state';
 import {
   AlbumRequest,
-  AlbumResponse,
   AlbumFilterRequest,
   PageRequest,
-  Paged,
   ApiError
 } from '@core/models';
 import { NotificationService } from '../services/notification.service';
@@ -15,7 +13,7 @@ import { Router } from '@angular/router';
 import { CoverApiService } from '../services/api';
 import { HttpErrorResponse } from '@angular/common/http';
 import { switchMap, map } from 'rxjs/operators';
-import { forkJoin, of } from 'rxjs';
+import { of } from 'rxjs';
 import { WebSocketService } from '../services/websocket/websocket.service';
 
 /**

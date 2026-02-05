@@ -3,10 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { lastValueFrom, takeUntil } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { AlbumFacade, ArtistFacade } from '@core/facades';
-import { AlbumRequest, AlbumResponse, ArtistaResponse } from '@core/models';
+import { AlbumRequest, ArtistaResponse } from '@core/models';
 
 @Component({
   selector: 'app-album-form',
@@ -20,7 +18,6 @@ export class AlbumFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly albumFacade = inject(AlbumFacade);
   private readonly artistFacade = inject(ArtistFacade);
-  // private readonly coverApiService = inject(CoverApiService); // Removed
   private readonly destroyRef = inject(DestroyRef);
 
   albumForm!: FormGroup;

@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { AuthFacade } from '@core/facades';
 import { DialogService } from '@core/services/dialog.service';
 
@@ -14,7 +14,6 @@ import { DialogService } from '@core/services/dialog.service';
 export class HeaderComponent {
   private readonly authFacade = inject(AuthFacade);
   private readonly dialogService = inject(DialogService);
-  private readonly router = inject(Router);
 
   readonly isAuthenticated$ = this.authFacade.state$;
 

@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 
 import { AuthFacade } from '@core/facades';
 import { LoginRequest } from '@core/models';
-import { TokenService } from '@core/services/token.service';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +14,6 @@ import { TokenService } from '@core/services/token.service';
 export class LoginComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly authFacade = inject(AuthFacade);
-  private readonly tokenService = inject(TokenService);
 
   loginForm: FormGroup;
   isLoading = this.authFacade.isLoading$;
@@ -30,7 +28,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const savedEmail = this.tokenService.getRememberedEmail();
+    const savedEmail = this.authFacade.getRememberedEmail();
     if (savedEmail) {
       this.loginForm.patchValue({
         username: savedEmail,
