@@ -4,18 +4,52 @@
 
 @layer base {
   body {
-    @apply bg-dark-bg text-white font-sans antialiased;
+    @apply bg-zinc-950 text-zinc-100 font-sans antialiased selection:bg-primary-500/30 selection:text-primary-200;
   }
 }
 
-.glass-panel {
-  @apply bg-glass-white backdrop-blur-lg border border-glass-border rounded-xl shadow-lg;
-}
+@layer components {
+  /* Cards */
+  .card-base {
+    @apply bg-zinc-900 border border-zinc-800 rounded-xl shadow-sm transition-all duration-200;
+  }
+  
+  .card-hover {
+    @apply hover:border-zinc-700 hover:shadow-glow-sm hover:translate-y-[-2px];
+  }
 
-.neon-text {
-  @apply text-white drop-shadow-neon;
-}
+  /* Inputs */
+  .input-primary {
+    @apply w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200;
+  }
 
-.btn-primary {
-  @apply bg-gradient-to-r from-neon-purple to-neon-pink text-white font-bold py-2 px-6 rounded-full hover:scale-105 transition-transform duration-300 shadow-neon-purple;
+  /* Buttons */
+  .btn-base {
+    @apply inline-flex items-center justify-center px-4 py-2.5 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-950 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn-base bg-primary-600 text-white hover:bg-primary-500 active:bg-primary-700 focus:ring-primary-500 shadow-lg shadow-primary-900/20;
+  }
+
+  .btn-secondary {
+    @apply btn-base bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 hover:text-white active:bg-zinc-800 focus:ring-zinc-600;
+  }
+
+  .btn-danger {
+    @apply btn-base bg-danger-600 text-white hover:bg-danger-500 focus:ring-danger-500;
+  }
+
+  .btn-ghost {
+    @apply btn-base bg-transparent text-zinc-400 hover:text-white hover:bg-zinc-800/50;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border;
+  }
+  
+  .badge-primary {
+    @apply bg-primary-500/10 text-primary-400 border-primary-500/20;
+  }
 }
