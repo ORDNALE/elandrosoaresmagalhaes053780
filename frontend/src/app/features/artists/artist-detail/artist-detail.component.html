@@ -1,76 +1,96 @@
-<div class="min-h-screen bg-gradient-to-br from-[#0a0e27] via-[#1a1a3e] to-[#2d1b3d] py-8 px-4">
+<div class="min-h-screen bg-zinc-950 py-8 px-4">
   <div class="container mx-auto max-w-7xl">
 
     <!-- Back Button -->
     <div class="mb-6">
       <a routerLink="/artists"
-        class="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        Back to Artists
+        class="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group">
+        <div class="p-1 rounded-full bg-zinc-900 group-hover:bg-zinc-800 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+        </div>
+        <span class="text-sm font-medium">Voltar para Artistas</span>
       </a>
     </div>
 
     <!-- Loading State -->
     @if (loading$ | async) {
-    <div class="flex justify-center items-center h-64">
-      <div class="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+    <div class="flex flex-col items-center justify-center h-64 gap-4">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+      <p class="text-zinc-500 text-sm animate-pulse">Carregando detalhes...</p>
     </div>
     }
 
     <!-- Error State -->
     @if ((error$ | async) && !(loading$ | async)) {
-    <div class="bg-red-500/10 border border-red-500/50 rounded-lg p-6 text-center">
-      <p class="text-red-400 text-lg font-semibold mb-2">Failed to load artist</p>
-      <p class="text-red-300 text-sm mb-4">{{ error$ | async }}</p>
-      <a routerLink="/artists"
-        class="inline-block px-6 py-2 bg-red-600 hover:bg-red-500 text-white rounded transition-all">
-        Back to Artists
+    <div class="flex flex-col items-center justify-center py-12 text-center">
+      <div class="w-16 h-16 bg-danger-500/10 rounded-full flex items-center justify-center mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-danger-500" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h3 class="text-lg font-semibold text-white mb-2">Erro ao carregar artista</h3>
+      <p class="text-zinc-500 mb-6 max-w-md">{{ error$ | async }}</p>
+      <a routerLink="/artists" class="btn-secondary">
+        Voltar para Lista
       </a>
     </div>
     }
 
     <!-- Artist Details -->
     @if ((artist$ | async) && !(loading$ | async)) {
-    <div class="space-y-8">
+    <div class="space-y-8 animate-fade-in">
 
       <!-- Artist Info Card -->
-      <div class="bg-[#0f0f13]/60 backdrop-blur-xl rounded-lg p-8 border border-gray-700/50">
-        <div class="flex items-start justify-between">
-          <div class="flex items-center gap-6">
+      <div class="card-base p-6 sm:p-8 bg-zinc-900/50 backdrop-blur-xl border-zinc-800/50 relative overflow-hidden">
+        <!-- Background Decor -->
+        <div
+          class="absolute top-0 right-0 w-64 h-64 bg-primary-900/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2">
+        </div>
+
+        <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 relative z-10">
+          <div class="flex flex-col md:flex-row items-center md:items-start gap-6 text-center md:text-left">
             <!-- Artist Avatar -->
             <div
-              class="w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center shadow-lg flex-shrink-0">
-              <span class="text-4xl font-bold text-white">
+              class="w-32 h-32 rounded-full bg-zinc-800 flex items-center justify-center shadow-xl border-4 border-zinc-950 flex-shrink-0 relative overflow-hidden group">
+              <div class="absolute inset-0 bg-gradient-to-br from-primary-900/20 to-zinc-900/50"></div>
+              <span class="text-5xl font-bold text-zinc-700 group-hover:text-primary-500/50 transition-colors">
                 {{ (artist$ | async)!.nome.charAt(0).toUpperCase() }}
               </span>
             </div>
 
             <!-- Artist Info -->
-            <div>
-              <h1 class="text-4xl font-bold text-white mb-2">{{ (artist$ | async)!.nome }}</h1>
-              <div class="flex items-center gap-3 mb-4">
-                <span class="px-3 py-1 text-sm font-semibold rounded border"
-                  [ngClass]="{'bg-purple-500/20 text-purple-400 border-purple-500/50': (artist$ | async)!.tipo === 'BANDA', 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50': (artist$ | async)!.tipo === 'SOLO'}">{{
+            <div class="md:mt-2">
+              <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">{{ (artist$ | async)!.nome }}</h1>
+              <div class="flex items-center justify-center md:justify-start gap-3 mb-4">
+                <span class="badge"
+                  [ngClass]="{'bg-zinc-700/30 text-zinc-400 border-zinc-700/50': (artist$ | async)!.tipo === 'BANDA', 'bg-primary-500/10 text-primary-400 border-primary-500/20': (artist$ | async)!.tipo === 'SOLO'}">{{
                   (artist$ | async)!.tipo }}</span>
+                <span class="text-sm text-zinc-500 flex items-center gap-1">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                    </path>
+                  </svg>
+                  {{ (artist$ | async)!.albuns.length }} {{ (artist$ | async)!.albuns.length !== 1 ? 'álbuns' : 'álbum'
+                  }}
+                </span>
               </div>
-              <p class="text-gray-400">
-                {{ (artist$ | async)!.albuns.length }} album{{ (artist$ | async)!.albuns.length !== 1 ?
-                's' : '' }}
-              </p>
             </div>
           </div>
 
           <!-- Action Buttons -->
-          <div class="flex gap-3" *ngIf="artist$ | async as artist">
-            <a [routerLink]="['/artists', artist.id, 'edit']"
-              class="px-6 py-3 bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 border border-orange-500/50 rounded font-medium transition-all">
-              Edit Artist
+          <div class="flex gap-3 w-full md:w-auto" *ngIf="artist$ | async as artist">
+            <a [routerLink]="['/artists', artist.id, 'edit']" class="flex-1 md:flex-none btn-secondary">
+              Editar
             </a>
             <button (click)="deleteArtist(artist)"
-              class="px-6 py-3 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/50 rounded font-medium transition-all">
-              Delete Artist
+              class="flex-1 md:flex-none btn-ghost text-danger-400 hover:bg-danger-500/10 hover:text-danger-300">
+              Excluir
             </button>
           </div>
         </div>
@@ -78,11 +98,19 @@
 
       <!-- Albums Section -->
       <div>
-        <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold text-white">Albums</h2>
+        <div
+          class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 border-b border-zinc-800 pb-4">
+          <div>
+            <h2 class="text-xl font-bold text-white">Discografia</h2>
+            <p class="text-sm text-zinc-500">Coleção de álbuns do artista</p>
+          </div>
           <a [routerLink]="['/albums/new']" [queryParams]="{artistId: (artist$ | async)!.id}"
-            class="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold rounded transition-all shadow-[0_0_20px_rgba(249,115,22,0.5)]">
-            + Add Album
+            class="btn-primary inline-flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Adicionar Álbum
           </a>
         </div>
 
@@ -90,45 +118,54 @@
         @if ((artist$ | async)!.albuns.length > 0) {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           @for (album of (artist$ | async)!.albuns; track album.id) {
-          <div
-            class="bg-[#0f0f13]/60 backdrop-blur-xl rounded-lg p-6 border border-gray-700/50 hover:border-orange-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(249,115,22,0.3)]">
-
-            <!-- Album Cover Placeholder -->
+          <div class="card-base card-hover overflow-hidden group h-full flex flex-col">
+            <!-- Placeholder Cover -->
             <div
-              class="aspect-square bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-lg mb-4 flex items-center justify-center">
-              <svg class="w-16 h-16 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              class="aspect-square bg-zinc-800/50 flex items-center justify-center relative overflow-hidden group-hover:bg-zinc-800 transition-colors">
+              <div class="absolute inset-0 bg-gradient-to-t from-zinc-900 to-transparent opacity-60"></div>
+              <svg class="w-16 h-16 text-zinc-700 group-hover:text-zinc-600 transition-colors" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                   d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3">
                 </path>
               </svg>
             </div>
 
-            <!-- Album Info -->
-            <h3 class="text-lg font-bold text-white mb-2">{{ album.titulo }}</h3>
+            <!-- Content -->
+            <div class="p-4 flex-1 flex flex-col">
+              <h3
+                class="text-base font-bold text-zinc-100 mb-1 group-hover:text-primary-400 transition-colors line-clamp-1"
+                [title]="album.titulo">
+                {{ album.titulo }}
+              </h3>
 
-            <!-- Actions -->
-            <div class="flex gap-2 mt-4">
-              <a [routerLink]="['/albums', album.id, 'edit']"
-                class="flex-1 px-3 py-2 bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 border border-orange-500/50 rounded text-center text-sm font-medium transition-all">
-                Edit
-              </a>
+              <!-- Actions -->
+              <div class="mt-auto pt-3 border-t border-zinc-800">
+                <a [routerLink]="['/albums', album.id, 'edit']"
+                  class="text-xs font-medium text-zinc-400 hover:text-primary-400 transition-colors flex items-center gap-1 justify-center py-1">
+                  Editar Álbum
+                </a>
+              </div>
             </div>
           </div>
           }
         </div>
         } @else {
         <!-- Empty Albums State -->
-        <div class="bg-[#0f0f13]/60 backdrop-blur-xl rounded-lg p-12 text-center border border-gray-700/50">
-          <svg class="w-16 h-16 mx-auto mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3">
-            </path>
-          </svg>
-          <h3 class="text-xl font-semibold text-gray-300 mb-2">No albums yet</h3>
-          <p class="text-gray-500 mb-6">This artist doesn't have any albums</p>
+        <div
+          class="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-zinc-800 rounded-2xl bg-zinc-900/30">
+          <div class="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3">
+              </path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-1">Nenhum álbum encontrado</h3>
+          <p class="text-zinc-500 mb-6 text-sm">Este artista ainda não possui álbuns cadastrados.</p>
           <a [routerLink]="['/albums/new']" [queryParams]="{artistId: (artist$ | async)!.id}"
-            class="inline-block px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold rounded transition-all shadow-[0_0_20px_rgba(249,115,22,0.5)]">
-            + Add First Album
+            class="btn-primary text-sm">
+            Adicionar Primeiro Álbum
           </a>
         </div>
         }

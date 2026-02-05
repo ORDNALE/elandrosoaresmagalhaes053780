@@ -1,111 +1,159 @@
-<div class="min-h-screen bg-gradient-to-br from-[#0a0e27] via-[#1a1a3e] to-[#2d1b3d] py-8 px-4">
+<div class="min-h-screen bg-zinc-950 py-8 px-4">
   <div class="container mx-auto max-w-2xl">
     <div class="mb-8">
       <a routerLink="/artists"
-         class="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors mb-4">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        Voltar para Artistas
-      </a>
-      <h1
-        class="text-4xl font-bold bg-gradient-to-r from-orange-400 via-orange-500 to-yellow-500 bg-clip-text text-transparent tracking-wider">
-        {{ isEditMode ? 'EDITAR ARTISTA' : 'NOVO ARTISTA' }}</h1>
-      <p class="text-gray-400 mt-2">{{ isEditMode ? 'Atualize as informações do artista' : 'Adicione um novo
-        artista à sua biblioteca' }}</p>
-    </div>
-    <div class="bg-[#0f0f13]/60 backdrop-blur-xl rounded-lg p-8 border border-gray-700/50">
-      @if ((loading$ | async) && isEditMode) {
-        <div class="flex justify-center items-center h-64">
-          <div class="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+        class="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-4 group">
+        <div class="p-1 rounded-full bg-zinc-900 group-hover:bg-zinc-800 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
         </div>
+        <span class="text-sm font-medium">Voltar para Artistas</span>
+      </a>
+      <h1 class="text-3xl font-bold text-white tracking-tight">
+        {{ isEditMode ? 'Editar Artista' : 'Novo Artista' }}
+      </h1>
+      <p class="text-zinc-400 mt-1">
+        {{ isEditMode ? 'Atualize as informações do artista' : 'Adicione um novo artista à sua biblioteca' }}
+      </p>
+    </div>
+
+    <div class="card-base p-6 sm:p-8 bg-zinc-900/50 backdrop-blur-xl border-zinc-800/50">
+      @if ((loading$ | async) && isEditMode) {
+      <div class="flex flex-col items-center justify-center h-64 gap-4">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+        <p class="text-zinc-500 text-sm animate-pulse">Carregando dados...</p>
+      </div>
       }
+
       @if (!(loading$ | async) || !isEditMode) {
-        <form [formGroup]="artistForm" (ngSubmit)="onSubmit()" class="space-y-6">
-          <div>
-            <label for="nome" class="block text-sm font-medium text-gray-300 mb-2">Nome do Artista <span
-              class="text-red-400">*</span></label>
-            <input id="nome" type="text" formControlName="nome" placeholder="Digite o nome do artista"
-                   class="w-full px-4 py-3 bg-transparent border-2 border-cyan-500/60 rounded focus:outline-none focus:border-cyan-400 transition-all text-white placeholder-gray-500"
-                   [class.border-red-500]="nome?.invalid && nome?.touched" />
-            @if (nome?.invalid && nome?.touched) {
-              <div class="mt-2 space-y-1">
-                @if (nome?.errors?.['required']) { <p class="text-red-400 text-sm">Nome é obrigatório</p> }
-                @if (nome?.errors?.['minlength']) { <p class="text-red-400 text-sm">Nome deve ter pelo menos 2
-                  caracteres</p> }
-                @if (nome?.errors?.['maxlength']) { <p class="text-red-400 text-sm">Nome não pode exceder 100
-                  caracteres</p> }
-              </div>
-            }
+      <form [formGroup]="artistForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+        <!-- Name Field -->
+        <div class="space-y-1.5">
+          <label for="nome" class="block text-sm font-medium text-zinc-300">
+            Nome do Artista <span class="text-primary-500">*</span>
+          </label>
+          <input id="nome" type="text" formControlName="nome" placeholder="Digite o nome do artista"
+            class="input-primary" [class.border-danger-500]="nome?.invalid && nome?.touched" />
+
+          @if (nome?.invalid && nome?.touched) {
+          <div class="text-xs text-danger-400 pl-1">
+            @if (nome?.errors?.['required']) { <span>Nome é obrigatório</span> }
+            @if (nome?.errors?.['minlength']) { <span>Nome deve ter pelo menos 2 caracteres</span> }
+            @if (nome?.errors?.['maxlength']) { <span>Nome não pode exceder 100 caracteres</span> }
           </div>
-          <div>
-            <label for="tipo" class="block text-sm font-medium text-gray-300 mb-2">Tipo de Artista <span
-              class="text-red-400">*</span></label>
-            <div class="grid grid-cols-2 gap-4">
-              <label
-                class="relative flex items-center justify-center p-4 border-2 rounded cursor-pointer transition-all"
-                [ngClass]="{'border-cyan-500 bg-cyan-500/10': tipo?.value === TipoArtista.SOLO, 'border-gray-600 hover:border-cyan-500/50': tipo?.value !== TipoArtista.SOLO}">
-                <input type="radio" formControlName="tipo" [value]="TipoArtista.SOLO" class="sr-only" />
-                <div class="text-center">
-                  <svg class="w-12 h-12 mx-auto mb-2"
-                       [ngClass]="{'text-cyan-400': tipo?.value === TipoArtista.SOLO, 'text-gray-500': tipo?.value !== TipoArtista.SOLO}"
-                       fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                  </svg>
-                  <span class="font-semibold"
-                        [ngClass]="{'text-cyan-400': tipo?.value === TipoArtista.SOLO, 'text-gray-300': tipo?.value !== TipoArtista.SOLO}">
-                                    Solo</span>
-                </div>
-              </label>
-              <label
-                class="relative flex items-center justify-center p-4 border-2 rounded cursor-pointer transition-all"
-                [ngClass]="{'border-purple-500 bg-purple-500/10': tipo?.value === TipoArtista.BANDA, 'border-gray-600 hover:border-purple-500/50': tipo?.value !== TipoArtista.BANDA}">
-                <input type="radio" formControlName="tipo" [value]="TipoArtista.BANDA" class="sr-only" />
-                <div class="text-center">
-                  <svg class="w-12 h-12 mx-auto mb-2"
-                       [ngClass]="{'text-purple-400': tipo?.value === TipoArtista.BANDA, 'text-gray-500': tipo?.value !== TipoArtista.BANDA}"
-                       fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
-                    </path>
-                  </svg>
-                  <span class="font-semibold"
-                        [ngClass]="{'text-purple-400': tipo?.value === TipoArtista.BANDA, 'text-gray-300': tipo?.value !== TipoArtista.BANDA}">Banda</span>
-                </div>
-              </label>
-            </div>
-          </div>
-          @if (error$ | async) {
-            <div class="p-4 bg-red-500/10 border border-red-500/50 rounded">
-              <p class="text-red-400 text-sm">{{ error$ | async }}</p>
-            </div>
           }
-          <div class="flex gap-4 pt-4">
-            <button type="button" (click)="onCancel()"
-                    class="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded transition-all"
-                    [disabled]="loading$ | async">Cancelar</button>
-            <button type="submit"
-                    class="flex-1 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold rounded transition-all shadow-[0_0_20px_rgba(249,115,22,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
-                    [disabled]="artistForm.invalid || (loading$ | async)">
-              @if (loading$ | async) {
-                <span class="flex items-center justify-center gap-2">
-                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                 viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                        stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                            Salvando...
-                        </span>
-              } @else {
-                {{ isEditMode ? 'Atualizar Artista' : 'Criar Artista' }}
+        </div>
+
+        <!-- Type Field -->
+        <div class="space-y-3">
+          <label class="block text-sm font-medium text-zinc-300">
+            Tipo de Artista <span class="text-primary-500">*</span>
+          </label>
+
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Solo Option -->
+            <label
+              class="relative flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 group"
+              [ngClass]="{
+                       'border-primary-600 bg-primary-900/10': tipo?.value === TipoArtista.SOLO, 
+                       'border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 hover:bg-zinc-800/50': tipo?.value !== TipoArtista.SOLO
+                     }">
+              <input type="radio" formControlName="tipo" [value]="TipoArtista.SOLO" class="sr-only" />
+              <svg class="w-10 h-10 mb-3 transition-colors duration-200"
+                [ngClass]="{'text-primary-400': tipo?.value === TipoArtista.SOLO, 'text-zinc-600 group-hover:text-zinc-400': tipo?.value !== TipoArtista.SOLO}"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+              <span class="font-medium text-sm transition-colors duration-200"
+                [ngClass]="{'text-primary-400': tipo?.value === TipoArtista.SOLO, 'text-zinc-500 group-hover:text-zinc-300': tipo?.value !== TipoArtista.SOLO}">
+                Solo
+              </span>
+
+              <!-- Selected Checkmark -->
+              @if (tipo?.value === TipoArtista.SOLO) {
+              <div class="absolute top-2 right-2 text-primary-500">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"></path>
+                </svg>
+              </div>
               }
-            </button>
+            </label>
+
+            <!-- Band Option -->
+            <label
+              class="relative flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 group"
+              [ngClass]="{
+                       'border-zinc-500 bg-zinc-500/10': tipo?.value === TipoArtista.BANDA, 
+                       'border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 hover:bg-zinc-800/50': tipo?.value !== TipoArtista.BANDA
+                     }">
+              <input type="radio" formControlName="tipo" [value]="TipoArtista.BANDA" class="sr-only" />
+              <svg class="w-10 h-10 mb-3 transition-colors duration-200"
+                [ngClass]="{'text-zinc-300': tipo?.value === TipoArtista.BANDA, 'text-zinc-600 group-hover:text-zinc-400': tipo?.value !== TipoArtista.BANDA}"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                </path>
+              </svg>
+              <span class="font-medium text-sm transition-colors duration-200"
+                [ngClass]="{'text-zinc-300': tipo?.value === TipoArtista.BANDA, 'text-zinc-500 group-hover:text-zinc-300': tipo?.value !== TipoArtista.BANDA}">
+                Banda
+              </span>
+
+              <!-- Selected Checkmark -->
+              @if (tipo?.value === TipoArtista.BANDA) {
+              <div class="absolute top-2 right-2 text-zinc-400">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"></path>
+                </svg>
+              </div>
+              }
+            </label>
           </div>
-        </form>
+        </div>
+
+        <!-- Error Alert -->
+        @if (error$ | async) {
+        <div class="p-3 bg-danger-500/10 border border-danger-500/20 rounded-lg flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-danger-500 flex-shrink-0" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <p class="text-sm text-danger-400">{{ error$ | async }}</p>
+        </div>
+        }
+
+        <!-- Form Actions -->
+        <div class="flex gap-4 pt-6 border-t border-zinc-800 mt-6">
+          <button type="button" (click)="onCancel()" class="btn-secondary flex-1" [disabled]="loading$ | async">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-primary flex-1 shadow-lg shadow-primary-500/20"
+            [disabled]="artistForm.invalid || (loading$ | async)">
+            @if (loading$ | async) {
+            <span class="flex items-center justify-center gap-2">
+              <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+              </svg>
+              Salvando...
+            </span>
+            } @else {
+            {{ isEditMode ? 'Salvar Alterações' : 'Criar Artista' }}
+            }
+          </button>
+        </div>
+      </form>
       }
     </div>
   </div>

@@ -42,7 +42,7 @@ export class ArtistListComponent implements OnInit {
   readonly pageCount$ = this.artistFacade.pageCount$;
   readonly total$ = this.artistFacade.total$;
 
-  pageSize = signal(12);
+  pageSize = signal(10);
   sortField = signal<'nome' | 'tipo'>('nome');
   sortDirection = signal<'asc' | 'desc'>('asc');
 
