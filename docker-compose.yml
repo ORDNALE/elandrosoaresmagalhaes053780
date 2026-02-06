@@ -36,7 +36,8 @@ services:
 
   api:
     build: ./backend
-    network_mode: host
+    ports:
+      - "8090:8090"
     depends_on:
       postgres:
         condition: service_healthy
@@ -44,11 +45,11 @@ services:
         condition: service_started
     environment:
       QUARKUS_HTTP_PORT: 8090
-      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5444/musicdb
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/musicdb
       QUARKUS_DATASOURCE_USERNAME: appuser
       QUARKUS_DATASOURCE_PASSWORD: app123
-      QUARKUS_MINIO_HOST: localhost
-      QUARKUS_MINIO_PORT: 19000
+      QUARKUS_MINIO_HOST: minio
+      QUARKUS_MINIO_PORT: 9000
       QUARKUS_MINIO_SECURE: "false"
       QUARKUS_MINIO_ACCESS_KEY: minioadmin
       QUARKUS_MINIO_SECRET_KEY: minioadmin
@@ -59,7 +60,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    network_mode: host
+    ports:
+      - "4201:4201"
     restart: unless-stopped
     depends_on:
       api:
