@@ -54,6 +54,7 @@ services:
       QUARKUS_MINIO_ACCESS_KEY: minioadmin
       QUARKUS_MINIO_SECRET_KEY: minioadmin
       MINIO_BUCKET_NAME: capa-albuns
+      MINIO_EXTERNAL_URL: http://localhost:19000
       QUARKUS_HTTP_CORS_ORIGINS: http://localhost:4201,http://localhost:4200,http://localhost
 
   frontend:
