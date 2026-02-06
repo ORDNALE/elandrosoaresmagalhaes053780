@@ -1,0 +1,4 @@
+# Forçar LF em scripts para evitar problemas de line ending no Docker (Windows/Linux)
+*.sh text eol=lf
+mvnw text eol=lf
+gradlew text eol=lf
