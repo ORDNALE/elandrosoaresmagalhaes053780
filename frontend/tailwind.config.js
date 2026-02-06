@@ -5,6 +5,11 @@ module.exports = {
   content: [
     "./src/**/*.{html,ts}",
   ],
+  safelist: [
+    {
+      pattern: /(bg|text|border)-(primary|zinc|danger|success)-(50|100|200|300|400|500|600|700|800|900|950)/,
+    },
+  ],
   darkMode: 'class',
   theme: {
     extend: {

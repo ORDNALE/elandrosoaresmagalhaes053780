@@ -2,10 +2,13 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
+# Forçar invalidação de cache a cada build se necessário (opcional, mas útil para debug)
+# ARG CACHEBUST=1
+
 COPY package*.json ./
 
-RUN npm ci
-
+# Limpar cache do npm antes de instalar para garantir frescor
+RUN npm cache clean --force && npm ci
 
 COPY . .
 
